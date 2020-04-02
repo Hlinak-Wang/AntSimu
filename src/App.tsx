@@ -1,14 +1,18 @@
 import React, {useState} from 'react';
-import './App.css';
+import Button, {ButtonType, ButtonSize} from './components/Button/Button';
 
-interface IDogmsg {
-  message: string;
-  status: boolean;
-}
 function App() {
+
   return (
     <div className="App">
-      hello
+      <Button size={ButtonSize.large}>hello</Button>
+      <Button btnType={ButtonType.link} href="https://www.baidu.com" disabled>baidu</Button>
+      <Button btnType={ButtonType.link} href="https://www.baidu.com">baidu</Button>
+      <Button size={ButtonSize.small}>small</Button>
+      <Button btnType={ButtonType.primary}>small</Button>
+      <Button btnType={ButtonType.primary} danger>danger</Button>
+      <Button btnType={ButtonType.primary} disabled>disabled</Button>
+      <Button disabled>disabled</Button>
     </div>
   );
 }
