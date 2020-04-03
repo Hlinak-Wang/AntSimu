@@ -1,19 +1,23 @@
 .btn {
-  @include button-size($btn-padding-y, $btn-padding-x, $btn-font-size, $btn-border-radius);
+  @include button-size($btn-height, $btn-padding, $btn-font-size);
   display: inline-block;
   position: relative;
-  font-family: $btn-font-family;
-  line-height: $btn-line-height;
-  border: $btn-border-width solid transparent;
-  transition: $btn-transition;
-  //box-shadow: $btn-box-shadow;
-  color: $body-color;
   text-align: center;
   white-space: nowrap;
   background-image: none;
-  vertical-align: middle;
+  margin: 0 8px 12px 0;
+  font-family: $btn-font-family;
+  border: $btn-border-width solid transparent;
+  border-radius: $btn-border-radius;
+  //transition: $btn-transition;
+  //box-shadow: $btn-box-shadow;
+  color: $body-color;
+  
   cursor: pointer;
-  &.disabled, &[disabled] {
+  &:focus {
+    outline: none;
+  }
+  &[disabled] {
     cursor: not-allowed;
     opacity: $btn-disabled-opacity;
     box-shadow: none;
@@ -21,41 +25,38 @@
       pointer-events: none;
     }
   }
-  &.btn-link {
-    color: $btn-link-color;
-    &:hover {
-      color: $btn-link-hover-color;
-    }
-    &.disabled {
-      color: $btn-link-disabled-color;
-    }
-  }
-
 }
 
 .btn-lg {
-  @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-border-radius-lg);
+  @include button-size($btn-height-lg, $btn-padding-lg, $btn-font-size-lg);
+  @include button-disabled-style($gray-2, $gray-4, rgba($black, 0.5));
 }
 
 .btn-sm {
-  @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $btn-font-size-sm, $btn-border-radius-sm);
+  @include button-size($btn-height-sm, $btn-padding-sm, $btn-font-size-sm);
+  @include button-disabled-style($gray-2, $gray-4, rgba($black, 0.5));
 }
 
 .btn-primary {
-  @include button-style($primary, $primary, $white)
+  text-shadow: $font-text-shadow;
+  @include button-style($primary, $primary, $white);
+  @include button-disabled-style($gray-2, $gray-4, rgba($black, 0.5));
 }
 
 .btn-danger {
-  @include button-style($danger, $danger, $white)
+  @include button-style($danger, $danger, $white);
+  @include button-disabled-style($gray-2, $gray-4, rgba($black, 0.5));
 }
 
 .btn-default {
-  @include button-style($white, $gray-800, $body-color, $white, $primary, $primary)
+  @include button-style($white, $gray-8, $body-color, $white, $primary, $primary);
+  @include button-disabled-style($gray-2, $gray-4, rgba($black, 0.5));
 }
 
 .btn-link {
   font-weight: $font-weight-normal;
   color: $btn-link-color;
+  background: $white;
   text-decoration: $link-decoration;
   box-shadow: none;
   &:hover {
@@ -66,10 +67,40 @@
     text-decoration: $link-hover-decoration;
     box-shadow: none;
   }
-  &.disabled, &:disabled {
+  &.disabled {
+    color: $btn-link-disabled-color;
+    pointer-events: none;
+  }
+  &[disabled] {
     color: $btn-link-disabled-color;
     cursor: not-allowed;
-    pointer-events: none;
-    
   }
+}
+
+.click-enter {
+  box-shadow: 0 0 5px $primary;
+  &.btn-danger {
+    box-shadow: 0 0 5px $danger;
+  }
+}
+.click-enter-active {
+  box-shadow: 0 0 5px rgba($primary, 0);
+  &.btn-danger {
+    box-shadow: 0 0 5px rgba($danger, 0);
+  }
+  transition: box-shadow 500ms;
+}
+
+.click-exit {
+  box-shadow: 0 0 5px $primary;
+  &.btn-danger {
+    box-shadow: 0 0 5px $danger;
+  }
+}
+.click-exit-active {
+  box-shadow: 0 0 5px rgba($primary, 0);
+  &.btn-danger {
+    box-shadow: 0 0 5px rgba($danger, 0);
+  }
+  transition: box-shadow 500ms;
 }

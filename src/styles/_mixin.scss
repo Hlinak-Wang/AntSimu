@@ -1,7 +1,7 @@
-@mixin button-size($padding-y, $padding-x, $font-size, $border-radius) {
-  padding: $padding-y $padding-x;
+@mixin button-size($height, $padding, $font-size) {
+  padding: $padding;
   font-size: $font-size;
-  border-radius: $border-radius;
+  height: $height;
 }
 
 @mixin button-style(
@@ -29,5 +29,18 @@
     background: $background;
     border-color: $border;
     color: $color;
+  }
+}
+
+@mixin button-disabled-style(
+  $background,
+  $border,
+  $color
+) {
+  &.disabled, &[disabled] {
+    color: $color;
+    background: $background;
+    border-color: $border;
+    text-shadow: none;
   }
 }
