@@ -1,8 +1,10 @@
 import React, {useState} from 'react';
-import Button, {ButtonType, ButtonSize, ButtonHTMLType} from './components/Button/Button';
-
+import Button, {ButtonType, ButtonSize, ButtonHTMLType} from './components/Button/button';
+import Alert, {AlertType} from './components/Alert/alert';
 function App() {
-
+  const message = (
+    <p style={{margin: 0}}>alert</p>
+  )
   return (
     <div className="App">
       <Button size={ButtonSize.large}>hello</Button>
@@ -13,6 +15,10 @@ function App() {
       <Button type={ButtonType.primary} danger>danger</Button>
       <Button type={ButtonType.primary} disabled HTMLType={ButtonHTMLType.button}>disabled</Button>
       <Button onClick={() => alert("hello")} disabled>disabled</Button>
+      <Alert type={AlertType.success} message={message} closable/>
+      <Alert type={AlertType.info} message="info" description="description test" closable/>
+      <Alert type={AlertType.error} message="error" closable/>
+      <Alert type={AlertType.warning} message="warning"/>
     </div>
   );
 }
