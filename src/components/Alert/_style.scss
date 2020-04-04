@@ -1,0 +1,74 @@
+.alert {
+  position: relative;
+  width: 100%;
+  border-radius: $border-radius;
+  font-weight: $font-weight-light;
+  padding: 8px 15px;
+  margin-bottom: 16px;
+  span {
+    display: block;
+  }
+  &.alert-closable {
+    padding-right: 30px;
+  }
+}
+
+.alert-success {
+  background: lighten($green,25%);
+  border: 0.5px solid darken($green,15%);
+}
+
+.alert-error {
+  background: lighten($red,25%);
+  border: 0.5px solid darken($red,15%);
+}
+
+.alert-warning {
+  background: lighten($yellow,25%);
+  border: 0.5px solid darken($yellow,15%);
+}
+
+.alert-info {
+  background: lighten($primary,25%);
+  border: 0.5px solid darken($primary,15%);
+}
+
+.alert-close-button {
+  background: transparent;
+  border: none;
+  overflow: hidden;
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  font-size: 12px;
+  line-height: 22px;
+  cursor: pointer;
+  &:focus {
+    outline: none;
+  }
+}
+
+
+.alertPop-enter {
+  opacity: 0;
+}
+.alertPop-enter-active {
+  opacity: 1;
+  transition: opacity 500ms;
+}
+
+.alertPop-enter-done {
+  opacity: 1;
+}
+
+.alertPop-exit {
+  opacity: 1;
+}
+.alertPop-exit-active {
+  opacity: 0;
+  transition: opacity 500ms;
+}
+
+.alertPop-exit-done {
+  opacity: 0;
+}
