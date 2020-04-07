@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { CSSTransition } from 'react-transition-group';
 import classnames from 'classnames';
 
@@ -10,21 +10,50 @@ export enum AlertType {
 }
 
 interface baseAlertProps {
+  className?:string;
+  style?:React.CSSProperties;
   type: AlertType;
-  message: React.ReactNode | string;
-  description?: React.ReactNode | string;
+  message: React.ReactNode;
+  description?: React.ReactNode;
   closable?: boolean;
-  closeText?: React.ReactNode | string;
+  closeText?: React.ReactNode;
+  onClose?:React.MouseEventHandler<HTMLButtonElement>;
+  afterClose?:() => void;
+  onClick?:React.MouseEventHandler<HTMLDivElement>;
+  onMouseEnter?:React.MouseEventHandler<HTMLDivElement>;
+  onMouseLeave?:React.MouseEventHandler<HTMLDivElement>;
 }
 
-const Alert: React.FC<baseAlertProps> = (props) => {
-  const { type, message, description, closable, closeText } = props;
-  const [showState, setStatus] = useState(true);
 
-  let classes = classnames('alert', {
+const Alert: React.FC<baseAlertProps> = (props) => {
+  const { 
+    className,
+    style,
+    type, 
+    message, 
+    description, 
+    closable, 
+    closeText,
+    onClose,
+    afterClose,
+    onClick,
+    onMouseEnter,
+    onMouseLeave
+  } = props;
+  const [showState, setStatus] = useState(true);
+  const handleOnClose:React.MouseEventHandler<HTMLButtonElement> = e => {
+    e.preventDefault();
+    setStatus(!showState)
+    if (onClose) {
+      onClose(e)
+    }
+  }
+
+  let classes = classnames('alert', className, {
     [`alert-${type}`]: true,
     'alert-closable': closable
   })
+
   
   return (
     <CSSTransition
@@ -32,8 +61,15 @@ const Alert: React.FC<baseAlertProps> = (props) => {
       timeout={500}
       classNames="alertPop"
       unmountOnExit
+      onExited={afterClose}
     >
-      <div className={classes}>
+      <div 
+        className={classes}
+        style={style}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
         <span className="alert-message">
           {message}
         </span>
@@ -42,7 +78,7 @@ const Alert: React.FC<baseAlertProps> = (props) => {
         </span>
         {
           closable 
-          ? <button className="alert-close-button" onClick={() => setStatus(!showState)}>
+          ? <button className="alert-close-button" onClick={handleOnClose}>
               {closeText}
             </button>
           : null
