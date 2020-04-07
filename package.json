@@ -15,12 +15,14 @@
     "axios": "^0.19.2",
     "classnames": "^2.2.6",
     "omit.js": "^1.0.2",
+    "rc-animate": "^2.10.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "react-transition-group": "^4.3.0",
     "typescript": "^3.7.5"
   },
+  "typings": "types/custom-types.d.ts",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
