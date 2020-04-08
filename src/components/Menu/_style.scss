@@ -38,29 +38,7 @@
 }
 
 .menu-vertical .submenu {
-  border-left: $menu-item-active-border-width solid transparent; 
-  padding: $menu-item-padding-y $menu-item-padding-x;
-  cursor: pointer;
-  transition: $menu-transition;
-  position: relative;
-  .submenu-item {
-    list-style: none;
-    padding: 0;
-    white-space: nowrap;
-    display: none;
-    background: white;
-  }
-  &.menu-open {
-    .submenu-item {
-      display: block;
-    }
-  }
-  .menu-item {
-    list-style: none;
-    &.is-active, &:hover {
-      color: $menu-item-active-color;
-    }
-  }
+  @include subMenu-style('vertical');
 }
 
 .menu-horizontal {
@@ -75,28 +53,41 @@
 }
 
 .menu-horizontal .submenu {
-  border-left: $menu-item-active-border-width solid transparent; 
-  padding: $menu-item-padding-y $menu-item-padding-x;
-  cursor: pointer;
-  transition: $menu-transition;
-  position: relative;
-  .submenu-item {
-    position: absolute;
+  @include subMenu-style('horizontal');
+}
+
+
+.submenu-popup {
+  display: block;
+  min-width: 160px;
+  position: absolute;
+  top: 50px;
+  left: 0;
+  
+  .Pop-itemGroup {
     list-style: none;
     padding: 0;
-    white-space: nowrap;
-    top: 50px;
+    margin: 0;
     box-shadow: 0 0 5px black;
-    display: none;
     background: white;
+    white-space: nowrap;
+    border-left: $menu-item-active-border-width solid transparent; 
   }
-  &.menu-open {
-    .submenu-item {
-      display: block;
-    }
-  }
+  
   .menu-item {
-    list-style: none;
+    padding: $menu-item-padding-y $menu-item-padding-x;
+    cursor: pointer;
+    transition: $menu-transition;
+    &:hover, &:focus {
+      text-decoration: none;
+    }
+
+    &.is-disabled {
+      color:$menu-item-disabled-color;
+      pointer-events: none;
+      cursor: default;
+    }
+
     &.is-active, &:hover {
       color: $menu-item-active-color;
     }
@@ -106,6 +97,3 @@
     }
   }
 }
-
-
-

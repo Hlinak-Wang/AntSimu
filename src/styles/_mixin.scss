@@ -44,3 +44,55 @@
     text-shadow: none;
   }
 }
+
+@mixin subMenu-style(
+  $mode
+) {
+  border-left: $menu-item-active-border-width solid transparent; 
+  padding: $menu-item-padding-y $menu-item-padding-x;
+  cursor: pointer;
+  transition: $menu-transition;
+  position: relative;
+
+  &.child-selected {
+    > .submenu-title {
+      color: $menu-item-active-color;
+    }
+    @if ($mode == 'horizontal') {
+      border-bottom: $menu-item-active-border-width solid $menu-item-active-color;
+    }
+  }
+
+  > .submenu-item {
+    list-style: none;
+    padding: 0;
+    white-space: nowrap;
+    display: none;
+    background: white;
+    @if ($mode == 'horizontal') {
+      min-width: 160px;
+      position: absolute;
+      top: 50px;
+      left: 0;
+      box-shadow: 0 0 5px black;
+    }
+  }
+
+  &.menu-open {
+    > .submenu-item {
+      display: block;
+    }
+  }
+  .menu-item {
+    list-style: none;
+    &.is-active, &:hover {
+      color: $menu-item-active-color;
+    }
+
+    @if ($mode == 'horizontal') { 
+      &.is-active {
+        background: lighten($primary, 40%);
+      }
+    }
+  }
+}
