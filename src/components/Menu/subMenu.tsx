@@ -1,9 +1,8 @@
-import React, { useContext, useState, useEffect, DOMElement } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useContext, useState } from 'react';
+import { CSSTransition } from 'react-transition-group';
 import classnames from 'classnames';
 import { MenuContext } from './menu'
 import { MenuItemProps } from './menuItem';
-import Pop from './pop';
 
 interface SubMenuProps {
   index?: string;
@@ -11,9 +10,10 @@ interface SubMenuProps {
   title:string;
   disabled?:boolean;
   defaultOpen?: boolean;
+  clickRes?: () => void;
 }
 
-const SubMenu:React.FC<SubMenuProps> = ({ index, className, title, disabled, defaultOpen, children }) => {
+const SubMenu:React.FC<SubMenuProps> = ({ index, className, title, disabled, defaultOpen, clickRes, children }) => {
 
   const [menuOpen, setOpen] = useState(false);
   const context = useContext(MenuContext);
@@ -23,33 +23,12 @@ const SubMenu:React.FC<SubMenuProps> = ({ index, className, title, disabled, def
     'child-selected': index && context.index.indexOf(index) === 0
   })
 
-  useEffect(() => {
-    const childrenComponent = React.Children.map(children, (child, childindex) => {
-      const childElement = child as React.FunctionComponentElement<MenuItemProps>;
-      const displayName = childElement.type.displayName || childElement.type.name;
-      if (displayName === 'MenuItem' || displayName === 'SubMenu') {
-        return React.cloneElement(childElement, {
-          index: `${index}-${childindex}`
-        })
-      } else {
-        console.error("Menu has a child which is not MenuItem component")
-      }
-    })
-    const div = document.createElement('div');
-    div.className = 'submenu-popup';
-    document.body.appendChild(div);
-    if (childrenComponent) {
-      _renderLayer(<Pop child={childrenComponent} />, div);
-    }
-  }, [])
-
   let timer: any;
-  const handleMouse = (e: React.MouseEvent, toggle: boolean) => {
+  const handleMouse = (toggle: boolean, timeOut: number) => {
     clearTimeout(timer);
-    e.preventDefault();
     timer = setTimeout(() => {
-      setOpen(toggle)
-    }, 300)
+      setOpen(toggle);
+    }, timeOut)
   }
 
   const handleClick = (e:React.MouseEvent) => {
@@ -57,26 +36,25 @@ const SubMenu:React.FC<SubMenuProps> = ({ index, className, title, disabled, def
     setOpen(!menuOpen);
   }
 
-  const clickEvent = context.mode === 'vertical' 
+  const clickEvent = context.mode === 'left' || context.mode === 'right'
     ? {onClick: handleClick} 
     : {};
   
-  const mouseEvent = context.mode !== 'vertical' ? {
-    onMouseEnter: (e: React.MouseEvent) => {handleMouse(e, true)},
-    onMouseLeave: (e: React.MouseEvent) => {handleMouse(e, false)}
+  const mouseEvent = context.mode !== 'left' && context.mode !== 'right' ? {
+    onMouseEnter: () => {handleMouse(true, 50)},
+    onMouseLeave: () => {handleMouse(false, 50)}
   } : {};
-  
-  function _renderLayer(child: React.FunctionComponentElement<any>, div: Element){//将弹层渲染到body下的div标签
-    ReactDOM.render(child, div);
-  }
 
   const renderChild = () => {
+    
     const childrenComponent = React.Children.map(children, (child, childindex) => {
       const childElement = child as React.FunctionComponentElement<MenuItemProps>;
       const displayName = childElement.type.displayName || childElement.type.name;
       if (displayName === 'MenuItem' || displayName === 'SubMenu') {
         return React.cloneElement(childElement, {
-          index: `${index}-${childindex}`
+          index: `${index}-${childindex}`,
+          // 给子级传入handleMouse 函数， 当点击事件在子级触发时执行，并且handleMouse触发以umount父级，并且如果有父级的父级的话在50ms的延迟下再unmount父级的父级
+          clickRes: () => {handleMouse(false, 50); setTimeout(() => {clickRes && clickRes()}, 50)}
         })
       } else {
         console.error("Menu has a child which is not MenuItem component")
@@ -84,9 +62,17 @@ const SubMenu:React.FC<SubMenuProps> = ({ index, className, title, disabled, def
     })
 
     return (
+      <CSSTransition
+      in={menuOpen}
+      timeout={300}
+      classNames="submenu-animate"
+      unmountOnExit
+    >
       <ul className="submenu-item">
         {childrenComponent}
       </ul>
+    </CSSTransition>
+      
     )
   }
   

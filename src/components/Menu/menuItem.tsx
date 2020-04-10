@@ -7,6 +7,7 @@ export interface MenuItemProps {
   disabled?:boolean;
   className?:string;
   style?:React.CSSProperties;
+  clickRes?: () => void
 }
 
 const MenuItem:React.FC<MenuItemProps> = (props) => {
@@ -15,7 +16,8 @@ const MenuItem:React.FC<MenuItemProps> = (props) => {
     disabled,
     className,
     style,
-    children
+    children,
+    clickRes
   } = props;
 
   const context = useContext(MenuContext)
@@ -27,6 +29,9 @@ const MenuItem:React.FC<MenuItemProps> = (props) => {
   const handleClick = () => {
     if (context.onSelect && !disabled && (typeof index === 'string')) {
       context.onSelect(index)
+    }
+    if (clickRes) {
+      clickRes()
     }
   }
 

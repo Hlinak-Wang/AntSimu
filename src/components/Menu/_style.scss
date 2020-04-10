@@ -1,12 +1,10 @@
 .menu {
   display: flex;
   flex-wrap: wrap;
-  padding-left: 0;
+  padding-left: 10px;
+  margin: 5px 0;
   list-style: none;
-  border: $menu-border-width solid $menu-border-color;
-  box-shadow: $menu-box-shadow;
   .menu-item {
-    padding: $menu-item-padding-y $menu-item-padding-x;
     cursor: pointer;
     transition: $menu-transition;
     &:hover, &:focus {
@@ -25,75 +23,67 @@
   }
 }
 
-.menu-vertical {
-  flex-direction: column;
-  margin-bottom: 0px;
-  border-right: $menu-border-width solid $menu-border-color;
-  > .menu-item {
-    border-left: $menu-item-active-border-width solid transparent; 
-    &.is-active, &:hover {
-      border-left: $menu-item-active-border-width solid $menu-item-active-color;
+.menu-left {
+  @include menu-style('left');
+}
+
+.menu-left .submenu {
+  @include subMenu-style('left');
+}
+
+.menu-top {
+  @include menu-style('top');
+}
+
+.menu-top .submenu {
+  @include subMenu-style('top');
+  .submenu-title {
+    &::after {
+      content: '>';
+      float: right;
     }
   }
 }
 
-.menu-vertical .submenu {
-  @include subMenu-style('vertical');
-}
-
-.menu-horizontal {
-  flex-direction: row;
-  margin-bottom: 30px;
-  > .menu-item {
-    border-bottom: $menu-item-active-border-width solid transparent;
-    &.is-active, &:hover {
-      border-bottom: $menu-item-active-border-width solid $menu-item-active-color;
+.menu-top > .submenu {
+  > .submenu-title {
+    &::after {
+      content: '';
     }
   }
 }
 
-.menu-horizontal .submenu {
-  @include subMenu-style('horizontal');
+.menu-right {
+  @include menu-style('right');
 }
 
+.menu-right .submenu {
+  @include subMenu-style('right');
+}
 
-.submenu-popup {
-  display: block;
-  min-width: 160px;
-  position: absolute;
-  top: 50px;
-  left: 0;
+.menu-bottom {
+  @include menu-style('bottom');
+}
+
+.menu-bottom .submenu {
+  @include subMenu-style('bottom');
   
-  .Pop-itemGroup {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    box-shadow: 0 0 5px black;
-    background: white;
-    white-space: nowrap;
-    border-left: $menu-item-active-border-width solid transparent; 
-  }
-  
-  .menu-item {
-    padding: $menu-item-padding-y $menu-item-padding-x;
-    cursor: pointer;
-    transition: $menu-transition;
-    &:hover, &:focus {
-      text-decoration: none;
-    }
+}
 
-    &.is-disabled {
-      color:$menu-item-disabled-color;
-      pointer-events: none;
-      cursor: default;
-    }
+.submenu-animate-enter {
+  opacity: 0;
+}
 
-    &.is-active, &:hover {
-      color: $menu-item-active-color;
-    }
+.submenu-animate-enter-active {
+  opacity: 1;
+  transition: opacity 300ms;
+}
 
-    &.is-active {
-      background: lighten($primary, 40%);
-    }
-  }
+.submenu-animate-exit {
+  opacity: 1;
+}
+
+.submenu-animate-exit-active {
+  opacity: 0;
+  transition: opacity 300ms;
 }

@@ -2,7 +2,7 @@ import React, { useState, createContext } from 'react';
 import classnames from 'classnames';
 import { MenuItemProps } from './menuItem';
 
-type MenuMode = 'vertical' | 'horizontal';
+type MenuMode = 'left' | 'top' | 'right' | 'bottom';
 type SelectCallBack = (selectIndex: string) => void;
 
 export interface MenuProps {
@@ -63,7 +63,7 @@ const Menu: React.FC<MenuProps> = (props) => {
   }
 
   return (
-    <ul className={classes} data-testid="test-menu">
+    <ul className={classes} data-testid="test-menu" style={style}>
       <MenuContext.Provider value={passedContext}>
         {renderChild()}
       </MenuContext.Provider>
@@ -72,7 +72,7 @@ const Menu: React.FC<MenuProps> = (props) => {
 }
 
 Menu.defaultProps = {
-  mode: 'vertical',
+  mode: 'left',
   defaultIndex: "0"
 }
 export default Menu;
