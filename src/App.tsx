@@ -2,36 +2,26 @@ import React, {useState} from 'react';
 import Menu from './components/Menu/menu';
 import MenuItem from './components/Menu/menuItem';
 import SubMenu from './components/Menu/subMenu';
+import Tabs from './components/Tabs/tabs';
+import TabsItem from './components/Tabs/tabsItem';
 
 function App() {
-  const message = (
-    <p style={{margin: 0}}>alert</p>
-  )
-
   return (
-    <div className="App">
-      <Menu mode="horizontal">
-        <MenuItem disabled>
-          234
-        </MenuItem>
-        <MenuItem>
-          asdf
-        </MenuItem>
-        <MenuItem>
-          2sgdf
-        </MenuItem>
-        <SubMenu title="test">
-          <MenuItem>
-            1
-          </MenuItem>
-          <MenuItem>
-            2
-          </MenuItem>
-          <MenuItem>
-            3
-          </MenuItem>
-        </SubMenu>
-      </Menu>
+    <div className="App" style={{margin: "10px"}}>
+      <Tabs onTabClick={() => console.log("hello")} size="large">
+        <TabsItem label="testing">
+          hello
+        </TabsItem>
+        <TabsItem label="hello">
+          hello2
+        </TabsItem>
+        <TabsItem label="asdfasdf">
+          hello3
+        </TabsItem>
+        <TabsItem label="123zxc">
+          hello4
+        </TabsItem>
+      </Tabs>
     </div>
   );
 }
