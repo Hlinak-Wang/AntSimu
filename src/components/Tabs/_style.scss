@@ -1,0 +1,97 @@
+
+.tabs-label {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;padding: 0;
+  margin: 0;
+}
+
+.tabs-label {
+  position: relative;
+  .tabs-slider {
+    display: block;
+    width: 0px;
+    height: 2px;
+    background: $primary;
+    position: absolute;
+    bottom: -1px;
+    left:0;
+    z-index: 1;
+    transition: transform 0.3s ease-in-out, width 0.4s ease-out, color 0.6s ease-in-out
+  }
+}
+
+.tabs-top .tabs-label{
+  border-bottom: 1px solid $gray-3;
+
+}
+
+
+.tabs-inline .tabs-label {
+  .label-item {
+    white-space: nowrap;
+    padding: 0.5rem 0;
+    margin-right: 2rem;
+    margin-bottom: -1px;
+    flex-direction: column;
+    cursor: pointer;
+    &.active {
+      color: $primary;
+    }
+  }
+}
+
+.tabs-card .tabs-label {
+  border-bottom: 1px solid $gray-3;
+  .label-item {
+    position: relative;
+    flex-direction: column;
+    white-space: nowrap;
+    padding: 0.5rem 0.8rem;
+    margin-right: 0.1rem;
+    background: $gray-1;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border: 1px solid $gray-3;
+    border-bottom: 0px;
+    cursor: pointer;
+    &.active {
+      color: $primary;
+      background: $white;
+      padding: 0.5rem 1.2rem;
+      &::after {
+        content: '';
+        background: $white;
+        position: absolute;
+        bottom: -1px;
+        right: 0;
+        left: 0;
+        height: 1px;
+      }
+    }
+  }
+}
+.tabs-small {
+  .tabs-label {
+    font-size: 14px;
+  }
+}
+
+.tabs-default {
+  .tabs-label {
+    font-size: 16px;
+  }
+}
+
+.tabs-large {
+  .tabs-label {
+    font-size: 18px;
+  }
+}
+
+.tabs-content {
+  display: none;
+  &.active {
+    display: block;
+  }
+}
