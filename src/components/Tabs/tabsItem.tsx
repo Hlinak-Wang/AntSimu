@@ -5,7 +5,7 @@ import { TabsContext } from './tabs';
 export interface TabsItemProps {
   label: React.ReactNode;
   index?: number;
-  children: React.ReactNode;
+  disabled?:boolean;
 }
 
 const TabsItem: React.FC<TabsItemProps> = ({index, children}) => {
@@ -21,6 +21,11 @@ const TabsItem: React.FC<TabsItemProps> = ({index, children}) => {
       {children}
     </div>
   )
+}
+
+TabsItem.defaultProps = {
+  index: 0,
+  disabled: false
 }
 
 export default TabsItem;

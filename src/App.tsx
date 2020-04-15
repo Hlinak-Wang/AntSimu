@@ -7,19 +7,79 @@ import TabsItem from './components/Tabs/tabsItem';
 
 function App() {
   return (
-    <div className="App" style={{margin: "10px"}}>
-      <Tabs onTabClick={() => console.log("hello")} size="large">
+    <div className="App" style={{margin: "10px", padding: "10px"}}>
+      <Tabs onTabClick={() => console.log("hello")} size="large" TabPosition='left' style={{ height: "200px"}}>
         <TabsItem label="testing">
           hello
         </TabsItem>
-        <TabsItem label="hello">
-          hello2
+        <TabsItem label="test">
+          hello
         </TabsItem>
-        <TabsItem label="asdfasdf">
-          hello3
+        <TabsItem label="testi">
+          hello
         </TabsItem>
-        <TabsItem label="123zxc">
-          hello4
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testing">
+          hello
+        </TabsItem>
+        <TabsItem label="test">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testing">
+          hello
+        </TabsItem>
+        <TabsItem label="test">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
+        </TabsItem>
+        <TabsItem label="testi">
+          hello
         </TabsItem>
       </Tabs>
     </div>

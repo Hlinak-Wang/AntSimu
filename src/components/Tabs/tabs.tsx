@@ -1,7 +1,7 @@
-import React, { createContext, useState, useRef } from 'react';
+import React, { createContext, useState, useRef, useEffect } from 'react';
 import classnames from 'classnames';
 import { TabsItemProps } from './tabsItem';
-import TabsLabel from './tabsLabel';
+import TabsLabel, { ValueType } from './tabsLabel';
 
 type TabsType = 'inline' | 'card' | 'editCard';
 type TabsSize = 'small' | 'default' | 'large';
@@ -16,21 +16,21 @@ interface TabsProps {
   onTabClick?: Function;
   onNextClick?: Function;
   onPrevClick?: Function;
+  style?: React.CSSProperties;
 }
 
 export interface ITabsContext {
   index: number;
-  sliderCSS?: React.CSSProperties;
-  setCSS?: ({}) => void;
-  onTabClick?: (index: number) => void
+  TabPosition?: TabPosition;
+  onTabClick?: (index: number) => void;
 }
 
 export const TabsContext = createContext<ITabsContext>({index: 0});
 
-const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, onTabClick, children }) => {
+const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, onTabClick, style, children }) => {
   
   const [selectedIndex, setSelect] = useState(0);
-  const [sliderCSS, setCSS] = useState<React.CSSProperties>({});
+  const [labels, setLabel] = useState<ValueType[]>([]);
   function handleSelect(index: number) {
     setSelect(index);
     onTabClick && onTabClick();
@@ -38,24 +38,22 @@ const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, onTabClick, childr
 
   const context = {
     index: selectedIndex,
-    sliderCSS,
-    setCSS,
+    TabPosition,
     onTabClick: handleSelect
   }
   
-  const renderLabel = () => {
-    const Label = React.Children.map(children, (child, index) => {
+  useEffect(() => {
+    React.Children.forEach(children, (child, index) => {
       const childElement = child as React.FunctionComponentElement<TabsItemProps>;
       const displayName = childElement.type.displayName || childElement.type.name;
       if (displayName === 'TabsItem') {
-        return React.cloneElement(<TabsLabel>{childElement.props.label}</TabsLabel>, 
-        {index})
+        const disabledLabel = childElement.props.disabled || false;
+        setLabel(v => [...v, {index, label:childElement.props.label, disabled: disabledLabel}]);
       } else {
         console.error("Tabs has a child which is not TabsItem component")
       }
     })
-    return Label
-  }
+  }, [children])
 
   const renderContent = () => {
     const Content = React.Children.map(children , (child, index) => {
@@ -77,13 +75,13 @@ const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, onTabClick, childr
   )
 
   return (
-    <div className={itemClass}>
+    <div className={itemClass} style={style}>
       <TabsContext.Provider value={context}>
-        <ul className="tabs-label">
-          {renderLabel()}
-          <div className="tabs-slider" style={sliderCSS}></div>
-        </ul>
-        {renderContent()}
+        {
+          TabPosition === 'bottom' 
+          ? <><div className="tabs-content-container">{renderContent()}</div><TabsLabel values={labels} /></>
+          : <><TabsLabel values={labels} /><div className="tabs-content-container">{renderContent()}</div></>
+        }
       </TabsContext.Provider>
     </div>
   )
