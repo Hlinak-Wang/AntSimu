@@ -1,7 +1,7 @@
 import React, { createContext, useState, useRef, useEffect } from 'react';
 import classnames from 'classnames';
 import { TabsItemProps } from './tabsItem';
-import TabsLabel, { ValueType } from './tabsLabel';
+import TabsLabel, { ITabsLabel } from './tabsLabel';
 
 type TabsType = 'inline' | 'card' | 'editCard';
 type TabsSize = 'small' | 'default' | 'large';
@@ -17,20 +17,26 @@ interface TabsProps {
   onNextClick?: Function;
   onPrevClick?: Function;
   style?: React.CSSProperties;
+  closable?: boolean;
+  onEdit?: (targetKey: number | React.MouseEvent<HTMLElement>, action: 'add' | 'remove') => void;
 }
 
 export interface ITabsContext {
   index: number;
   TabPosition?: TabPosition;
+  closable?: boolean;
   onTabClick?: (index: number) => void;
 }
 
 export const TabsContext = createContext<ITabsContext>({index: 0});
 
-const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, onTabClick, style, children }) => {
+const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, closable, onEdit, onTabClick, style, children }) => {
   
   const [selectedIndex, setSelect] = useState(0);
-  const [labels, setLabel] = useState<ValueType[]>([]);
+  const [labels, setLabel] = useState<ITabsLabel>({
+    labels: []
+  });
+
   function handleSelect(index: number) {
     setSelect(index);
     onTabClick && onTabClick();
@@ -39,6 +45,7 @@ const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, onTabClick, style,
   const context = {
     index: selectedIndex,
     TabPosition,
+    closable,
     onTabClick: handleSelect
   }
   
@@ -48,12 +55,12 @@ const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, onTabClick, style,
       const displayName = childElement.type.displayName || childElement.type.name;
       if (displayName === 'TabsItem') {
         const disabledLabel = childElement.props.disabled || false;
-        setLabel(v => [...v, {index, label:childElement.props.label, disabled: disabledLabel}]);
+        setLabel(v => ({labels: [...v.labels, {index, label:childElement.props.label, disabled: disabledLabel}], ...v.onTabClick, ...v.style}));
       } else {
         console.error("Tabs has a child which is not TabsItem component")
       }
     })
-  }, [children])
+  }, [])
 
   const renderContent = () => {
     const Content = React.Children.map(children , (child, index) => {
@@ -65,7 +72,11 @@ const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, onTabClick, style,
         console.error("Tabs has a child which is not TabsItem component")
       }
     })
-    return Content
+    return (
+      <div className="tabs-content-container">
+        {Content}
+      </div>
+    )
   }
 
   const itemClass = classnames('tabs', 
@@ -74,13 +85,25 @@ const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, onTabClick, style,
     `tabs-${TabPosition}`
   )
 
+  const removeTabs = (targetKey: number, e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    if (onEdit) {
+      onEdit(targetKey, 'remove')
+    }
+  }
+
   return (
     <div className={itemClass} style={style}>
       <TabsContext.Provider value={context}>
         {
+          type === 'editCard'
+          ? <button>x</button>
+          : null
+        }
+        {
           TabPosition === 'bottom' 
-          ? <><div className="tabs-content-container">{renderContent()}</div><TabsLabel values={labels} /></>
-          : <><TabsLabel values={labels} /><div className="tabs-content-container">{renderContent()}</div></>
+          ? <>{renderContent()}<TabsLabel {...labels} /></>
+          : <><TabsLabel {...labels} />{renderContent()}</>
         }
       </TabsContext.Provider>
     </div>
@@ -91,6 +114,7 @@ Tabs.defaultProps = {
   type: 'inline',
   size: 'default',
   TabPosition: 'top',
+  closable: false,
 }
 
 export default Tabs;

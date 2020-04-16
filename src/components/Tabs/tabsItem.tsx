@@ -5,6 +5,7 @@ import { TabsContext } from './tabs';
 export interface TabsItemProps {
   label: React.ReactNode;
   index?: number;
+  style?:React.CSSProperties;
   disabled?:boolean;
 }
 

@@ -2,20 +2,17 @@ import React, { useContext, useState, useRef, useEffect } from 'react';
 import classnames from 'classnames';
 import { TabsContext } from './tabs';
 
-interface TabsLabelProps {
-  index?: number;
-  values: ValueType[];
+export type ITabsLabel = {
+  labels: {
+    index: number;
+    label: React.ReactNode;
+    disabled: boolean;
+  }[];
   style?:React.CSSProperties;
   onTabClick?: (selectIndex: number) => void;
 }
 
-export type ValueType = {
-  index: number;
-  label: React.ReactNode;
-  disabled: boolean;
-}
-
-const TabsLabel:React.FC<TabsLabelProps> = ({ values, style, children }) => {
+const TabsLabel:React.FC<ITabsLabel> = ({ labels }) => {
 
   const context = useContext(TabsContext);
   const liRef = useRef<HTMLLIElement | null>(null);
@@ -36,6 +33,7 @@ const TabsLabel:React.FC<TabsLabelProps> = ({ values, style, children }) => {
    * context 改为 context.index 的话会造成
    * 无法挂载正确的slider （待解决）
    * console context 发现两次的结果都一样
+   * 提供下方滑块的效果
    */
   useEffect(() => {
     const { TabPosition } = context;
@@ -88,6 +86,9 @@ const TabsLabel:React.FC<TabsLabelProps> = ({ values, style, children }) => {
     }
   }, [context]);
 
+  /**
+   * 提供实时确认 prev和next 按钮的状态（是否为disabled）
+   */
   useEffect(() => {
     const { TabPosition } = context;
     if (contianRef.current && ulRef.current && TabPosition) {
@@ -198,21 +199,21 @@ const TabsLabel:React.FC<TabsLabelProps> = ({ values, style, children }) => {
       <div className="show-container" ref={contianRef}>
         <ul className="tabs-label" ref={ulRef} style={ulCSS}>
           {
-            values.map(value => {
+            labels.map(label => {
               const labelClass = classnames('label-item', {
-                'disabled': value.disabled
+                'disabled': label.disabled
               })
 
-              if (value.index === context.index) {
+              if (label.index === context.index) {
                 return (
-                  <li className={labelClass + ' active'} onClick={() => handleClick(value.index)} ref={liRef}>
-                    {value.label}
+                  <li className={labelClass + ' active'} onClick={() => handleClick(label.index)} ref={liRef}>
+                    {label.label}
                   </li>
                 )
               } else {
                 return (
-                  <li className={labelClass} onClick={() => handleClick(value.index)}>
-                    {value.label}
+                  <li className={labelClass} onClick={() => handleClick(label.index)}>
+                    {label.label}
                   </li>
                 )
               }
@@ -226,7 +227,4 @@ const TabsLabel:React.FC<TabsLabelProps> = ({ values, style, children }) => {
   )
 }
 
-TabsLabel.defaultProps = {
-  index: 0
-}
 export default TabsLabel;
