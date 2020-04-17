@@ -5,6 +5,7 @@ import { TabsContext } from './tabs';
 export interface TabsItemProps {
   label: React.ReactNode;
   index?: number;
+  closable?: boolean;
   style?:React.CSSProperties;
   disabled?:boolean;
 }
@@ -26,7 +27,8 @@ const TabsItem: React.FC<TabsItemProps> = ({index, children}) => {
 
 TabsItem.defaultProps = {
   index: 0,
-  disabled: false
+  disabled: false,
+  closable: false
 }
 
 export default TabsItem;

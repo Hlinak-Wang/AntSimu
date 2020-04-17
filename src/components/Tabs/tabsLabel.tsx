@@ -2,17 +2,21 @@ import React, { useContext, useState, useRef, useEffect } from 'react';
 import classnames from 'classnames';
 import { TabsContext } from './tabs';
 
-export type ITabsLabel = {
-  labels: {
-    index: number;
-    label: React.ReactNode;
-    disabled: boolean;
-  }[];
-  style?:React.CSSProperties;
-  onTabClick?: (selectIndex: number) => void;
+export type Ilabel = {
+  index: number;
+  label: React.ReactNode;
+  disabled: boolean;
+  closable: boolean;
 }
 
-const TabsLabel:React.FC<ITabsLabel> = ({ labels }) => {
+export type ITabsLabel = {
+  labels: Ilabel[];
+  style?:React.CSSProperties;
+  onTabClick?: (selectIndex: number) => void;
+  rmTabs?: (targetIndex: number, e: React.MouseEvent<HTMLElement>) => void;
+}
+
+const TabsLabel:React.FC<ITabsLabel> = ({ labels, rmTabs }) => {
 
   const context = useContext(TabsContext);
   const liRef = useRef<HTMLLIElement | null>(null);
@@ -112,7 +116,7 @@ const TabsLabel:React.FC<ITabsLabel> = ({ labels }) => {
       setNextClass('')
     }
   }, [ulRef.current && ulCSS])
-
+  
   function prev() {
     const { TabPosition } = context;
     if (contianRef.current && ulRef.current && TabPosition) {
@@ -208,12 +212,22 @@ const TabsLabel:React.FC<ITabsLabel> = ({ labels }) => {
                 return (
                   <li className={labelClass + ' active'} onClick={() => handleClick(label.index)} ref={liRef}>
                     {label.label}
+                    {
+                      label.closable
+                      ? <span className="tabs-close-btn" onClick={e => rmTabs && rmTabs(label.index,e)}>x</span>
+                      : null
+                    }
                   </li>
                 )
               } else {
                 return (
                   <li className={labelClass} onClick={() => handleClick(label.index)}>
                     {label.label}
+                    {
+                      label.closable
+                      ? <span className="tabs-close-btn" onClick={e => rmTabs && rmTabs(label.index,e)}>x</span>
+                      : null
+                    }
                   </li>
                 )
               }

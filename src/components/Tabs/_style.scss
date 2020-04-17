@@ -362,3 +362,19 @@
     display: block;
   }
 }
+
+.tabs-close-btn {
+  color: $gray-7;
+  width: 16px;
+  height: 100%;
+  float: right;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 1rem;
+  margin-right: -0.8rem;
+  vertical-align: middle;
+  overflow: hidden;
+  &:hover {
+    color: $black;
+  }
+}

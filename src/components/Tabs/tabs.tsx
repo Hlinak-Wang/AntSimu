@@ -1,9 +1,9 @@
 import React, { createContext, useState, useRef, useEffect } from 'react';
 import classnames from 'classnames';
 import { TabsItemProps } from './tabsItem';
-import TabsLabel, { ITabsLabel } from './tabsLabel';
+import TabsLabel, { Ilabel } from './tabsLabel';
 
-type TabsType = 'inline' | 'card' | 'editCard';
+type TabsType = 'inline' | 'card';
 type TabsSize = 'small' | 'default' | 'large';
 type TabPosition = 'top' | 'bottom' | 'right' | 'left';
 
@@ -18,7 +18,7 @@ interface TabsProps {
   onPrevClick?: Function;
   style?: React.CSSProperties;
   closable?: boolean;
-  onEdit?: (targetKey: number | React.MouseEvent<HTMLElement>, action: 'add' | 'remove') => void;
+  onEdit?: (targetIndex: number, action: 'add' | 'remove') => void;
 }
 
 export interface ITabsContext {
@@ -33,9 +33,7 @@ export const TabsContext = createContext<ITabsContext>({index: 0});
 const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, closable, onEdit, onTabClick, style, children }) => {
   
   const [selectedIndex, setSelect] = useState(0);
-  const [labels, setLabel] = useState<ITabsLabel>({
-    labels: []
-  });
+  const [labels, setLabel] = useState<Ilabel[]>([]);
 
   function handleSelect(index: number) {
     setSelect(index);
@@ -48,19 +46,47 @@ const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, closable, onEdit, 
     closable,
     onTabClick: handleSelect
   }
-  
+
+  const removeTabs = (targetIndex: number, e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    if (onEdit) {
+      onEdit(targetIndex, 'remove')
+    }
+  }
+
+  const addTabs = (targetIndex: number) => {
+    if (onEdit) {
+      onEdit(targetIndex, 'add')
+    }
+  }
+
   useEffect(() => {
     React.Children.forEach(children, (child, index) => {
       const childElement = child as React.FunctionComponentElement<TabsItemProps>;
       const displayName = childElement.type.displayName || childElement.type.name;
       if (displayName === 'TabsItem') {
         const disabledLabel = childElement.props.disabled || false;
-        setLabel(v => ({labels: [...v.labels, {index, label:childElement.props.label, disabled: disabledLabel}], ...v.onTabClick, ...v.style}));
+        const closable = childElement.props.closable || false;
+        setLabel(v => [...v, {index, label:childElement.props.label, disabled: disabledLabel, closable}]);
       } else {
         console.error("Tabs has a child which is not TabsItem component")
       }
     })
   }, [])
+
+  const renderTabs = () => {
+    React.Children.forEach(children, (child, index) => {
+      const childElement = child as React.FunctionComponentElement<TabsItemProps>;
+      const displayName = childElement.type.displayName || childElement.type.name;
+      if (displayName === 'TabsItem') {
+        const disabledLabel = childElement.props.disabled || false;
+        const closable = childElement.props.closable || false;
+        setLabel(v => [...v, {index, label:childElement.props.label, disabled: disabledLabel, closable}]);
+      } else {
+        console.error("Tabs has a child which is not TabsItem component")
+      }
+    }) 
+  }
 
   const renderContent = () => {
     const Content = React.Children.map(children , (child, index) => {
@@ -85,25 +111,15 @@ const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, closable, onEdit, 
     `tabs-${TabPosition}`
   )
 
-  const removeTabs = (targetKey: number, e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    if (onEdit) {
-      onEdit(targetKey, 'remove')
-    }
-  }
+  
 
   return (
     <div className={itemClass} style={style}>
       <TabsContext.Provider value={context}>
         {
-          type === 'editCard'
-          ? <button>x</button>
-          : null
-        }
-        {
           TabPosition === 'bottom' 
-          ? <>{renderContent()}<TabsLabel {...labels} /></>
-          : <><TabsLabel {...labels} />{renderContent()}</>
+          ? <>{renderContent()}<TabsLabel labels={labels} rmTabs={removeTabs} /></>
+          : <><TabsLabel labels={labels} rmTabs={removeTabs} />{renderContent()}</>
         }
       </TabsContext.Provider>
     </div>
