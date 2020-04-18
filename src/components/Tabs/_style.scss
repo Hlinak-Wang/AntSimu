@@ -378,3 +378,25 @@
     color: $black;
   }
 }
+
+
+.tabs-scroller {
+  position: relative;
+  .prev-button {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .next-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+
+.tabs-scroll-container {
+  div {
+    display: inline-block;
+  }
+}

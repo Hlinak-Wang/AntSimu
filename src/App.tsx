@@ -10,6 +10,34 @@ function App() {
     {label: "4", content: "4 content", closable: true},
     {label: "5", content: "5 content", closable: false},
     {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6adsfasdfadsdfadsfadsfasfadsf", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6adsfasdfadsdfadsfadsfasfadsf", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6", content: "6 content", closable: true},
+    {label: "6adsfasdfadsdfadsfadsfasfadsf", content: "6 content", closable: true},
   ])
 
   function remove(targetIndex: number) {
@@ -38,9 +66,10 @@ function App() {
         onEdit={onEdit}
         onTabClick={() => console.log("hello")} 
         size="large" 
-        TabPosition='top' 
-        type="card">
-          
+        TabPosition='bottom' 
+        type="inline"
+        style={{height: "300px"}}
+        >
         {
           list.map(v => {
             
