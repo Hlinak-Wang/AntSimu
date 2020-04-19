@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
+import React, { useCallback, useState, useRef, useEffect, useReducer } from 'react';
 import { TabsItemProps } from './tabsItem';
 import SliderBar from './sliderBar';
 import classnames from 'classnames';
@@ -10,16 +10,75 @@ interface IScroller {
   changeActive: (index: number) => void;
 }
 
+interface IAction {
+  type: 'setX' | 'setY' | 'setPrevCls' | 'setNextCls' | 'setActiveNode' | 'setScrollNode';
+
+}
+
+interface IState {
+  shiftX: number,
+  shiftY: number,
+  prevCls: string,
+  nextCls: string,
+  activeNode: HTMLDivElement | null,
+  scrollNode: HTMLDivElement | null,
+}
+
+const initialSate: IState = {
+  shiftX: 0,
+  shiftY: 0,
+  prevCls: '',
+  nextCls: '',
+  activeNode: null,
+  scrollNode: null,
+}
+
+function reducer(state: IState, action: IAction) {
+  switch (action.type ){
+    case 'setX' :
+      return state;
+    case 'setY' :
+      return state;
+    case 'setPrevCls' :
+      return state;
+    case 'setNextCls' :
+      return state;
+    case 'setActiveNode' :
+      return state;
+    case 'setScrollNode' :
+      return state;
+    default:
+      return state;
+  }
+}
+
 const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeActive }) => {
 
-  const scrollRef = useRef<HTMLDivElement | null>(null);
   const containRef = useRef<HTMLDivElement | null>(null);
-  const [transform, setTransform] = useState<React.CSSProperties>({});
-  const [shiftX, setShiftX] = useState<Number>(0);
-  const [shiftY, setShiftY] = useState<Number>(0);
+  const [shiftX, setShiftX] = useState<number>(0);
+  const [shiftY, setShiftY] = useState<number>(0);
   const [prevClass, setPrevClass] = useState<string>('');
   const [nextClass, setNextClass] = useState<string>('');
-  const activeRef = useRef<HTMLDivElement | null>(null);
+  const [activeNode, setActiveNode] = useState()
+  const [scrollNode, setScrollNode] = useState();
+  const [state, dispatch] = useReducer(reducer, initialSate);
+  
+  const ActiveCall = useCallback(node => {
+    if (node !== null) {
+      setActiveNode(node)
+    }
+  }, []);
+
+  const ScrollCall = useCallback(node => {
+    if (node !== null) {
+      setScrollNode(node);
+      console.log(node);
+      console.log(scrollNode)
+      node.addEventListener('wheel', (e:WheelEvent) => handleScroll(e), { passive: false });
+    }
+  }, [])
+
+  
 
   const renderTabs = () => {
     const Label = React.Children.map(items, (child, index) => {
@@ -28,11 +87,17 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
       if (displayName === 'TabsItem') {
         const cls = classnames('label-item', { 
           active: activeIndex === index
-        })
-        return React.cloneElement(<div onClick={() => changeActive(index)}>{childElement.props.label}</div>, {
-          ref: activeIndex === index ? activeRef : null,  
-          className: cls
-        })
+        }) 
+        
+        return (
+          <div 
+            onClick={() => changeActive(index)} 
+            ref={activeIndex === index ? ActiveCall : null} 
+            className={cls}
+          >
+            {childElement.props.label}
+          </div>
+        )
       } else {
         console.error("Tabs has a child which is not TabsItem component")
       }
@@ -40,84 +105,42 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
     return Label
   }
 
+ 
   useEffect(() => {
-    if (activeRef.current && scrollRef.current && containRef.current) {
-
-      const ulStyle = scrollRef.current.style.transform;
-      let x: number = 0;
-      let y: number = 0;
-      if (ulStyle) {
-        const splitArr = ulStyle.split(/[,px() ]/)
-        x = parseInt(splitArr[1]);
-        y = parseInt(splitArr[5]);
-      }
-
+    if (activeNode && scrollNode && containRef.current) {
       if (direction === 'horizontal') {
-
-        if (activeRef.current.clientWidth + activeRef.current.offsetLeft + x > containRef.current.clientWidth) {
-          setTransform({
-            transform: `translate3d(${-activeRef.current.offsetLeft}px,0px,0px)`,
-          })
-        } else if (activeRef.current.offsetLeft < -x) {
-          setTransform({
-            transform: `translate3d(${-activeRef.current.offsetLeft}px,0px,0px)`,
-          })
+        if (activeNode.clientWidth + activeNode.offsetLeft + shiftX > containRef.current.clientWidth) {
+          setShiftX(-activeNode.offsetLeft);
+        } else if (activeNode.offsetLeft < -shiftX) {
+          setShiftX(-activeNode.offsetLeft);
         }
       } else if (direction === 'vertical') {
 
-        if (activeRef.current.clientHeight + activeRef.current.offsetTop + y > containRef.current.clientHeight) {
-          setTransform({
-            transform: `translate3d(0px,${-activeRef.current.offsetTop}px,0px)`,
-          })
-        } else if (activeRef.current.offsetTop < -y) {
-          setTransform({
-            transform: `translate3d(0px,${-activeRef.current.offsetTop}px,0px)`,
-          })
+        if (activeNode.clientHeight + activeNode.offsetTop + shiftY > containRef.current.clientHeight) {
+          setShiftY(-activeNode.offsetTop);
+        } else if (activeNode.offsetTop < -shiftY) {
+          setShiftY(-activeNode.offsetTop);
         }
       }
     }
-  }, [activeIndex]);
+  }, [activeNode]);
 
   /**
    * 提供实时确认 prev和next 按钮的状态（是否为disabled）
    */
   useEffect(() => {
-    if (containRef.current && scrollRef.current) {
-
-      const ulStyle = scrollRef.current.style.transform;
-      let x: number = 0;
-      let y: number = 0;
-      if (ulStyle) {
-        const splitArr = ulStyle.split(/[,px() ]/)
-        x = parseInt(splitArr[1]);
-        y = parseInt(splitArr[5]);
-      }
-      if (x || y)
+    if (containRef.current && scrollNode) {
+      if (shiftX || shiftY)
       setPrevClass('')
       else 
       setPrevClass('tabs-btn-diabled')
 
-      if (x - containRef.current.clientWidth <= -scrollRef.current.clientWidth && y - containRef.current.clientHeight <= -scrollRef.current.clientHeight)
+      if (shiftX - containRef.current.clientWidth <= -scrollNode.clientWidth && shiftY - containRef.current.clientHeight <= -scrollNode.clientHeight)
       setNextClass('tabs-btn-diabled')
       else 
       setNextClass('')
     }
-  }, [scrollRef.current && transform])
-  
-  function getCurrTransform() {
-    let x: number = 0;
-    let y: number = 0;
-
-    if (scrollRef.current) {
-      const ulStyle = scrollRef.current.style.transform;
-      if (ulStyle) {
-        const splitArr = ulStyle.split(/[,px() ]/)
-        x = parseInt(splitArr[1]);
-        y = parseInt(splitArr[5]);
-      }
-    }
-    return {x, y}
-  }
+  }, [scrollNode,shiftX, shiftY])
 
   function prev() {
     if (!containRef.current) {
@@ -125,57 +148,68 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
       return;
     }
 
-    const {x, y} = getCurrTransform();
-    if (direction === 'horizontal') {
-      if (x + containRef.current.clientWidth > 0) {
-        setTransform({
-          transform: `translate3d(0px,0px,0px)`,
-        })
-      } else if (x) {
-        setTransform({
-          transform: `translate3d(${x + containRef.current.clientWidth}px,0px,0px)`,
-        })
+    if (direction === 'horizontal' && containRef.current) {
+      if (shiftX + containRef.current.clientWidth > 0) {
+        setShiftX(0);
+      } else if (shiftX) {
+        setShiftX(shiftX + containRef.current.clientWidth);
       }
     } else if (direction === 'vertical') {
-      if (y + containRef.current.clientHeight > 0) {
-        setTransform({
-          transform: `translate3d(0px,0px,0px)`,
-        })
-      } else if (y) {
-        setTransform({
-          transform: `translate3d(0px,${y + containRef.current.clientHeight}px,0px)`,
-        })
+      if (shiftY + containRef.current.clientHeight > 0) {
+        setShiftY(0);
+      } else if (shiftY) {
+        setShiftY(shiftY + containRef.current.clientHeight);
       }
     }
   }
 
   function next() {
-    if (!containRef.current || !scrollRef.current) {
-      console.error("can't get container or scroller DOM");
+    if (!containRef.current) {
+      console.error("can't get container DOM");
       return;
     }
 
-    const {x, y} = getCurrTransform();
+    if (!scrollNode) {
+      console.error("can't get scroller DOM");
+      return;
+    }
+
     if (direction === 'horizontal') {
-      if (x - 2 * containRef.current.clientWidth < -scrollRef.current.clientWidth) {
-        setTransform({
-          transform: `translate3d(${containRef.current.clientWidth - scrollRef.current.clientWidth}px,0px,0px)`,
-        })
-      } else if (x - containRef.current.clientWidth > -scrollRef.current.clientWidth) {
-        setTransform({
-          transform: `translate3d(${x - containRef.current.clientWidth}px,0px,0px)`,
-        })
+      if (shiftX - 2 * containRef.current.clientWidth < -scrollNode.clientWidth) {
+        setShiftX(containRef.current.clientWidth - scrollNode.clientWidth);
+      } else if (shiftX - containRef.current.clientWidth > -scrollNode.clientWidth) {
+        setShiftX(shiftX - containRef.current.clientWidth);
       } 
     } else if (direction === 'vertical') {
-      if (y - 2 * containRef.current.clientHeight < -scrollRef.current.clientHeight) {
-        setTransform({
-          transform: `translate3d(0px,${containRef.current.clientHeight - scrollRef.current.clientHeight}px,0px)`,
-        })
-      } else if (y - containRef.current.clientHeight > -scrollRef.current.clientHeight) {
-        setTransform({
-          transform: `translate3d(0px,${y - containRef.current.clientHeight}px,0px)`,
-        })
+      if (shiftY - 2 * containRef.current.clientHeight < -scrollNode.clientHeight) {
+        setShiftY(containRef.current.clientHeight - scrollNode.clientHeight);
+      } else if (shiftY - containRef.current.clientHeight > -scrollNode.clientHeight) {
+        setShiftY(shiftY - containRef.current.clientHeight);
       } 
+    }
+  }
+
+ /*  useEffect(() => {
+    console.log("add")
+    const test = document.getElementById("test");
+    console.log(test)
+    if (test !== null)
+    test.addEventListener('wheel', e => handleScroll(e), { passive: false });
+    return () => {
+      console.log("rmove")
+      if (test != null)
+      test.removeEventListener('wheel', e => handleScroll(e));
+    }
+  }, [scrollNode]) */
+
+  function handleScroll(e: WheelEvent) {
+    e.preventDefault();
+    console.log(e.deltaY)
+    if (e.deltaY <= 0) {
+      // scroll top
+      prev();
+    } else if (e.deltaY > 0){
+      next();
     }
   }
 
@@ -188,9 +222,9 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
         next
       </div>
       <div className="show-container" ref={containRef}>
-        <div className="tabs-label" ref={scrollRef} style={transform}>
+        <div id="test" className="tabs-label" ref={ScrollCall} style={{transform: `translate3d(${shiftX}px,${shiftY}px,0px)`}}>
           {renderTabs()}
-          <SliderBar activeRef={activeRef} direction={direction} />
+          <SliderBar activeRef={activeNode} direction="horizontal"/>
         </div>
       </div>
     </div>
