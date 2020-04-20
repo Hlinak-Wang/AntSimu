@@ -10,58 +10,15 @@ interface IScroller {
   changeActive: (index: number) => void;
 }
 
-interface IAction {
-  type: 'setX' | 'setY' | 'setPrevCls' | 'setNextCls' | 'setActiveNode' | 'setScrollNode';
-
-}
-
-interface IState {
-  shiftX: number,
-  shiftY: number,
-  prevCls: string,
-  nextCls: string,
-  activeNode: HTMLDivElement | null,
-  scrollNode: HTMLDivElement | null,
-}
-
-const initialSate: IState = {
-  shiftX: 0,
-  shiftY: 0,
-  prevCls: '',
-  nextCls: '',
-  activeNode: null,
-  scrollNode: null,
-}
-
-function reducer(state: IState, action: IAction) {
-  switch (action.type ){
-    case 'setX' :
-      return state;
-    case 'setY' :
-      return state;
-    case 'setPrevCls' :
-      return state;
-    case 'setNextCls' :
-      return state;
-    case 'setActiveNode' :
-      return state;
-    case 'setScrollNode' :
-      return state;
-    default:
-      return state;
-  }
-}
-
 const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeActive }) => {
 
   const containRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const [shiftX, setShiftX] = useState<number>(0);
   const [shiftY, setShiftY] = useState<number>(0);
   const [prevClass, setPrevClass] = useState<string>('');
   const [nextClass, setNextClass] = useState<string>('');
   const [activeNode, setActiveNode] = useState()
-  const [scrollNode, setScrollNode] = useState();
-  const [state, dispatch] = useReducer(reducer, initialSate);
   
   const ActiveCall = useCallback(node => {
     if (node !== null) {
@@ -69,16 +26,20 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
     }
   }, []);
 
-  const ScrollCall = useCallback(node => {
-    if (node !== null) {
-      setScrollNode(node);
-      console.log(node);
-      console.log(scrollNode)
-      node.addEventListener('wheel', (e:WheelEvent) => handleScroll(e), { passive: false });
-    }
-  }, [])
+  const test = useCallback((e: WheelEvent) => {
+    handleScroll(e)
+  }, [shiftX, shiftY]);
 
-  
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.addEventListener('wheel', test, { passive: false });
+    }
+    return () => {
+      if (scrollRef.current) {
+        scrollRef.current.removeEventListener('wheel', test);
+      }
+    }
+  }, [shiftX, shiftY])
 
   const renderTabs = () => {
     const Label = React.Children.map(items, (child, index) => {
@@ -105,9 +66,8 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
     return Label
   }
 
- 
   useEffect(() => {
-    if (activeNode && scrollNode && containRef.current) {
+    if (activeNode && scrollRef.current && containRef.current) {
       if (direction === 'horizontal') {
         if (activeNode.clientWidth + activeNode.offsetLeft + shiftX > containRef.current.clientWidth) {
           setShiftX(-activeNode.offsetLeft);
@@ -129,18 +89,20 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
    * 提供实时确认 prev和next 按钮的状态（是否为disabled）
    */
   useEffect(() => {
-    if (containRef.current && scrollNode) {
-      if (shiftX || shiftY)
-      setPrevClass('')
-      else 
-      setPrevClass('tabs-btn-diabled')
-
-      if (shiftX - containRef.current.clientWidth <= -scrollNode.clientWidth && shiftY - containRef.current.clientHeight <= -scrollNode.clientHeight)
-      setNextClass('tabs-btn-diabled')
-      else 
-      setNextClass('')
+    if (containRef.current && scrollRef.current) {
+      if (shiftX || shiftY) {
+        setPrevClass('');
+      } else {
+        setPrevClass('tabs-btn-diabled');
+      }
+      
+      if (shiftX - containRef.current.clientWidth <= -scrollRef.current.clientWidth && shiftY - containRef.current.clientHeight <= -scrollRef.current.clientHeight) {
+        setNextClass('tabs-btn-diabled');
+      } else {
+        setNextClass('');
+      }
     }
-  }, [scrollNode,shiftX, shiftY])
+  }, [scrollRef.current,shiftX, shiftY])
 
   function prev() {
     if (!containRef.current) {
@@ -169,38 +131,25 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
       return;
     }
 
-    if (!scrollNode) {
+    if (!scrollRef.current) {
       console.error("can't get scroller DOM");
       return;
     }
 
     if (direction === 'horizontal') {
-      if (shiftX - 2 * containRef.current.clientWidth < -scrollNode.clientWidth) {
-        setShiftX(containRef.current.clientWidth - scrollNode.clientWidth);
-      } else if (shiftX - containRef.current.clientWidth > -scrollNode.clientWidth) {
+      if (shiftX - 2 * containRef.current.clientWidth < -scrollRef.current.clientWidth) {
+        setShiftX(containRef.current.clientWidth - scrollRef.current.clientWidth);
+      } else if (shiftX - containRef.current.clientWidth > -scrollRef.current.clientWidth) {
         setShiftX(shiftX - containRef.current.clientWidth);
-      } 
+      }
     } else if (direction === 'vertical') {
-      if (shiftY - 2 * containRef.current.clientHeight < -scrollNode.clientHeight) {
-        setShiftY(containRef.current.clientHeight - scrollNode.clientHeight);
-      } else if (shiftY - containRef.current.clientHeight > -scrollNode.clientHeight) {
+      if (shiftY - 2 * containRef.current.clientHeight < -scrollRef.current.clientHeight) {
+        setShiftY(containRef.current.clientHeight - scrollRef.current.clientHeight);
+      } else if (shiftY - containRef.current.clientHeight > -scrollRef.current.clientHeight) {
         setShiftY(shiftY - containRef.current.clientHeight);
       } 
     }
   }
-
- /*  useEffect(() => {
-    console.log("add")
-    const test = document.getElementById("test");
-    console.log(test)
-    if (test !== null)
-    test.addEventListener('wheel', e => handleScroll(e), { passive: false });
-    return () => {
-      console.log("rmove")
-      if (test != null)
-      test.removeEventListener('wheel', e => handleScroll(e));
-    }
-  }, [scrollNode]) */
 
   function handleScroll(e: WheelEvent) {
     e.preventDefault();
@@ -222,7 +171,7 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
         next
       </div>
       <div className="show-container" ref={containRef}>
-        <div id="test" className="tabs-label" ref={ScrollCall} style={{transform: `translate3d(${shiftX}px,${shiftY}px,0px)`}}>
+        <div className="tabs-label" ref={scrollRef} style={{transform: `translate3d(${shiftX}px,${shiftY}px,0px)`}}>
           {renderTabs()}
           <SliderBar activeRef={activeNode} direction="horizontal"/>
         </div>
