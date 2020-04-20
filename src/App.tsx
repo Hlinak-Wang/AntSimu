@@ -1,6 +1,10 @@
 import React, {useState} from 'react';
 import Tabs from './components/Tabs/tabs';
 import TabsItem from './components/Tabs/tabsItem';
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { library } from '@fortawesome/fontawesome-svg-core';
+import Icon from './components/Icon/icon';
+library.add(fas);
 
 function App() {
   const [list, setList] = useState([
@@ -66,7 +70,7 @@ function App() {
         onEdit={onEdit}
         onTabClick={() => console.log("hello")} 
         size="large" 
-        TabPosition='bottom' 
+        TabPosition='left' 
         type="inline"
         style={{height: "300px"}}
         >
@@ -81,6 +85,7 @@ function App() {
           })
         }
       </Tabs>
+      <Icon icon="arrow-down" size="10x" theme="danger"/>
     </div>
   );
 }
