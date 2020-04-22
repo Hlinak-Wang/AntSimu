@@ -4,7 +4,7 @@
   height: $height;
 }
 
-@mixin button-style(
+@mixin btn-style(
   $background, 
   $border,
   $color,
@@ -15,20 +15,10 @@
   color: $color;
   background: $background;
   border-color: $border;
-  &:hover {
+  &:hover, &:focus, &.focus {
     background: $hover-background;
     border-color: $hover-border;
     color: $hover-color;
-  }
-  &:focus, &.focus {
-    background: $hover-background;
-    border-color: $hover-border;
-    color: $hover-color;
-  }
-  &:disabled, &.disabled {
-    background: $background;
-    border-color: $border;
-    color: $color;
   }
 }
 
@@ -149,21 +139,6 @@
     }
   }
 
-  /* .submenu-title {
-    @if $mode == 'top' or $mode == 'bottom' {
-      &::after {
-        content: '>';
-        float: right;
-      }
-    } @else if $mode == 'right' or $mode == 'left' {
-      &::after {
-        content: '>';
-        transform: rotate(90deg);
-        padding: 0 10px;
-        float: right;
-      }
-    }
-  } */
   .menu-item {
     list-style: none;
     padding: $menu-item-padding-vertical;

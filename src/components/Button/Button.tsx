@@ -1,24 +1,12 @@
 import React, { useState } from 'react';
-import { CSSTransition } from 'react-transition-group';
 import classnames from 'classnames';
 import omit from 'omit.js';
 
-export enum ButtonSize {
-  small = 'sm',
-  large = 'lg',
-}
+export type ButtonSize = 'sm' | 'lg';
 
-export enum ButtonType {
-  primary = 'primary',
-  default = 'default',
-  link = 'link',
-}
+export type ButtonType = 'primary' | 'default' | 'link';
 
-export enum ButtonHTMLType {
-  button = 'button',
-  submit = 'submit',
-  reset = 'reset',
-}
+export type ButtonHTMLType = 'button' | 'submit' | 'reset';
 
 interface baseButtonProps {
   className ?: string;
@@ -29,6 +17,7 @@ interface baseButtonProps {
   href?: string;
   danger?:boolean;
   HTMLType?: string;
+  block?: boolean;
 }
 
 export type NativeButtonProps = {
@@ -54,14 +43,16 @@ const Button: React.FC<ButtonProps> = (props) => {
     size,
     children,
     danger,
+    block,
     ...propsLeft
   } = props;
   
-  const [clickStatus, setStatus] = useState(true);
+  const [clickStatus, setStatus] = useState(false);
 
   const handleClick:React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement> = e => {
     const { onClick } = props;
-    setStatus(!clickStatus);
+    setStatus(true);
+    
     if (onClick) {
       (onClick as React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>)(e)
     }
@@ -74,8 +65,10 @@ const Button: React.FC<ButtonProps> = (props) => {
     const classes = classnames('btn', className, {
       [`btn-${type}`]: type,
       [`btn-${size}`]: size,
-      [`btn-danger`]: danger,
-      disabled: href !== undefined && disabled
+      'btn-danger': danger,
+      'btn-block': block,
+      disabled: href !== undefined && disabled,
+      'animated swing': clickStatus
     })
 
     return (
@@ -93,24 +86,21 @@ const Button: React.FC<ButtonProps> = (props) => {
     const classes = classnames('btn', className, {
       [`btn-${type}`]: type,
       [`btn-${size}`]: size,
-      [`btn-danger`]: danger,
+      'btn-danger': danger,
+      'btn-block': block,
+      'click-animate': clickStatus
     })
     return (
-      <CSSTransition
-        in={clickStatus}
-        timeout={500}
-        classNames="click"
+      <button
+        className={classes}
+        disabled = {disabled}
+        type={HTMLType}
+        onClick = {handleClick}
+        onAnimationEnd={() => setStatus(false)}
+        {...buttonProps}
       >
-        <button
-          className={classes}
-          disabled = {disabled}
-          type={HTMLType}
-          onClick = {handleClick}
-          {...buttonProps}
-        >
-          {children}
-        </button>
-      </CSSTransition>
+        {children}
+      </button>
     )
   }
 }
@@ -118,8 +108,8 @@ const Button: React.FC<ButtonProps> = (props) => {
 Button.defaultProps = {
   disabled: false,
   danger: false,
-  type: ButtonType.default,
-  HTMLType: ButtonHTMLType.button,
+  type: 'default',
+  HTMLType: 'button',
 }
 
 export default Button;

@@ -7,6 +7,11 @@
 // mixin
 @import "mixin";
 
+@import "animate_mixin";
+
+// animate
+@import "animate";
+
 // button
 @import "../components/Button/style";
 
