@@ -1,0 +1,94 @@
+@mixin pull-out-animate (
+  $direction: 'top',
+  $scaleStart: scaleY(0),
+  $scaleEnd: scaleY(1),
+  $origin: center top
+) {
+  .pull-out-#{$direction}-enter {
+    opacity: 0;
+    transform: $scaleStart;
+  }
+
+  .pull-out-#{$direction}-enter-active {
+    opacity: 1;
+    transform: $scaleEnd;
+    transform-origin: $origin;
+    transition: transform 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms, opacity 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms;
+  }
+
+  .pull-out-#{$direction}-exit {
+    opacity: 1;
+    transform: $scaleEnd;
+  }
+
+  .pull-out-#{$direction}-exit-active {
+    opacity: 0;
+    transform: $scaleStart;
+    transform-origin: $origin;
+    transition: transform 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms, opacity 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms;
+  }
+}
+
+@mixin keyframes() {
+  @keyframes click-primary {
+    from {
+      box-shadow: 0 0 0px 0px $primary;
+      text-shadow: 0 0 0 transparent;
+    }
+  
+    15% {
+      box-shadow: 0 0 5px 1px $primary;
+      text-shadow: 0 0 1px rgba($primary,0.8);
+    }
+  
+    to {
+      box-shadow: 0 0 0px 0px $primary;
+      text-shadow: 0 0 0 transparent;
+    }
+  }
+
+  @keyframes click-primary-danger {
+    from {
+      box-shadow: 0 0 0px 0px $danger;
+      text-shadow: 0 0 0 transparent;
+    }
+  
+    15% {
+      box-shadow: 0 0 5px 1px $danger;
+      text-shadow: 0 0 1px rgba($danger,0.8);
+    }
+  
+    to {
+      box-shadow: 0 0 0px 0px $danger;
+      text-shadow: 0 0 0 transparent;
+    }
+  }
+
+  @keyframes click-link {
+    from {
+      text-shadow: 0 0 0 transparent;
+    }
+  
+    15% {
+      text-shadow: 0 0 1px rgba($primary,0.8);
+    }
+  
+    to {
+      text-shadow: 0 0 0 transparent;
+    }
+  }
+
+  @keyframes click-link-danger {
+    from {
+      text-shadow: 0 0 0 transparent;
+    }
+  
+    15% {
+      text-shadow: 0 0 1px rgba($danger,0.8);
+    }
+  
+    to {
+      text-shadow: 0 0 0 transparent;
+    }
+  }
+}

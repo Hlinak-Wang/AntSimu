@@ -1,0 +1,24 @@
+
+@include pull-out-animate('top', scaleY(0), scaleY(1), center top);
+@include pull-out-animate('left', scale(0.45, 0.45), scale(1, 1), top left);
+@include pull-out-animate('right', scale(0.45, 0.45), scale(1, 1), top right);
+@include pull-out-animate('bottom', scaleY(0), scaleY(1), center bottom);
+
+@include keyframes();
+
+.click-animate {
+  &.btn-primary, &.btn-default {
+    animation-name: click-primary;
+    &.btn-danger {
+      animation-name: click-primary-danger;
+    }
+  }
+  &.btn-link {
+    animation-name: click-link;
+    &.btn-danger {
+      animation-name: click-link-danger;
+    }
+  }
+  animation-duration: 0.3s;
+  animation-fill-mode: both;
+}
