@@ -1,5 +1,5 @@
 import React from 'react';
-import Alert, { AlertType } from './alert';
+import Alert, { } from './alert';
 import { render, fireEvent } from '@testing-library/react';
 
 describe('test set for alert', () => {
@@ -12,37 +12,37 @@ describe('test set for alert', () => {
   });
 
   it('test: render in the correct formate with out description', () => {
-    let wrapp = render(<Alert message="message-success" description="description-success" type={AlertType.success}/>);
+    let wrapp = render(<Alert message="message-success" description="description-success" type='success'/>);
     expect(wrapp).toMatchSnapshot();
     wrapp.unmount();
 
-    wrapp = render(<Alert message="message-info" description="description-info" type={AlertType.info}/>);
+    wrapp = render(<Alert message="message-info" description="description-info" type='info'/>);
     expect(wrapp).toMatchSnapshot();
     wrapp.unmount();
 
-    wrapp = render(<Alert message="message-warning" description="description-warning" type={AlertType.warning}/>);
+    wrapp = render(<Alert message="message-warning" description="description-warning" type='warning'/>);
     expect(wrapp).toMatchSnapshot();
     wrapp.unmount();
 
-    wrapp = render(<Alert message="message-error" description="description-error" type={AlertType.error}/>);
+    wrapp = render(<Alert message="message-error" description="description-error" type='error'/>);
     expect(wrapp).toMatchSnapshot();
     wrapp.unmount();
   })
 
   it('test: render in the correct formate with description', () => {
-    let wrapp = render(<Alert message="message-success" type={AlertType.success}/>);
+    let wrapp = render(<Alert message="message-success" type='success'/>);
     expect(wrapp).toMatchSnapshot();
     wrapp.unmount();
 
-    wrapp = render(<Alert message="message-info" description="description-info" type={AlertType.info}/>);
+    wrapp = render(<Alert message="message-info" description="description-info" type='info'/>);
     expect(wrapp).toMatchSnapshot();
     wrapp.unmount();
 
-    wrapp = render(<Alert message="message-warning" description="description-warning" type={AlertType.warning}/>);
+    wrapp = render(<Alert message="message-warning" description="description-warning" type='warning'/>);
     expect(wrapp).toMatchSnapshot();
     wrapp.unmount();
 
-    wrapp = render(<Alert message="message-error" description="description-error" type={AlertType.error}/>);
+    wrapp = render(<Alert message="message-error" description="description-error" type='error'/>);
     expect(wrapp).toMatchSnapshot();
     wrapp.unmount();
   })
@@ -53,7 +53,7 @@ describe('test set for alert', () => {
       afterClose: jest.fn(),
       closable: true
     };
-    let wrapp = render(<Alert message="closable" type={AlertType.success} {...closeProps}/>);
+    let wrapp = render(<Alert message="closable" type='success' {...closeProps}/>);
     expect(wrapp).toMatchSnapshot();
     let closeButton = wrapp.getByText('X');
     fireEvent.click(closeButton);

@@ -2,12 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { CSSTransition } from 'react-transition-group';
 import classnames from 'classnames';
 
-export enum AlertType {
-  success= 'success',
-  info= 'info',
-  error= 'error',
-  warning= 'warning'
-}
+export type AlertType = 'success' | 'info' | 'error' | 'warning';
 
 interface baseAlertProps {
   className?:string;
@@ -54,15 +49,37 @@ const Alert: React.FC<baseAlertProps> = (props) => {
     'alert-closable': closable
   })
 
-  
-  return (
-    <CSSTransition
-      in={showState}
-      timeout={500}
-      classNames="alertPop"
-      unmountOnExit
-      onExited={afterClose}
-    >
+  if (closable) {
+    return (
+      <CSSTransition
+        in={showState}
+        timeout={300}
+        classNames="pull-out-top"
+        unmountOnExit
+        onExited={afterClose}
+      >
+        <div 
+          className={classes}
+          style={style}
+          onClick={onClick}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+        >
+          <span className="alert-message">
+            {message}
+          </span>
+          <span className="alert-description">
+            {description}
+          </span>
+            <button className="alert-close-button" onClick={handleOnClose}>
+                {closeText}
+            </button>
+          }
+        </div>
+      </CSSTransition>
+    )
+  } else {
+    return (
       <div 
         className={classes}
         style={style}
@@ -76,16 +93,10 @@ const Alert: React.FC<baseAlertProps> = (props) => {
         <span className="alert-description">
           {description}
         </span>
-        {
-          closable 
-          ? <button className="alert-close-button" onClick={handleOnClose}>
-              {closeText}
-            </button>
-          : null
-        }
       </div>
-    </CSSTransition>
-  )
+    )
+  }
+  
 }
 
 Alert.defaultProps = {
