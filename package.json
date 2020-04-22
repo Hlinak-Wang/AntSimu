@@ -15,6 +15,7 @@
     "@types/react": "^16.9.31",
     "@types/react-dom": "^16.9.6",
     "@types/react-transition-group": "^4.2.4",
+    "animate.css": "^3.7.2",
     "axios": "^0.19.2",
     "classnames": "^2.2.6",
     "omit.js": "^1.0.2",
@@ -30,7 +31,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -48,6 +51,11 @@
     ]
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^5.3.18",
+    "@storybook/addon-links": "^5.3.18",
+    "@storybook/addons": "^5.3.18",
+    "@storybook/preset-create-react-app": "^2.1.1",
+    "@storybook/react": "^5.3.18",
     "css-loader": "^3.4.2",
     "node-sass": "^4.13.1",
     "sass-loader": "^8.0.2",
