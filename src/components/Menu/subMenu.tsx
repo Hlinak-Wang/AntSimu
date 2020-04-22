@@ -3,6 +3,7 @@ import { CSSTransition } from 'react-transition-group';
 import classnames from 'classnames';
 import { MenuContext } from './menu'
 import { MenuItemProps } from './menuItem';
+import Animate from '../Animate/animate';
 
 interface SubMenuProps {
   index?: string;
@@ -52,7 +53,7 @@ const SubMenu:React.FC<SubMenuProps> = ({ index, className, title, disabled, def
       const displayName = childElement.type.displayName || childElement.type.name;
       if (displayName === 'MenuItem' || displayName === 'SubMenu') {
         return React.cloneElement(childElement, {
-          index: `${index}-${childindex}`,
+          key: `${index}-${childindex}`,
           // 给子级传入handleMouse 函数， 当点击事件在子级触发时执行，并且handleMouse触发以umount父级，并且如果有父级的父级的话在50ms的延迟下再unmount父级的父级
           clickRes: () => {handleMouse(false, 50); setTimeout(() => {clickRes && clickRes()}, 50)}
         })
@@ -62,17 +63,15 @@ const SubMenu:React.FC<SubMenuProps> = ({ index, className, title, disabled, def
     })
 
     return (
-      <CSSTransition
+    <Animate
       in={menuOpen}
       timeout={300}
-      classNames="submenu-animate"
-      unmountOnExit
+      classNames={`pull-out-${context.mode}`}
     >
       <ul className="submenu-item">
         {childrenComponent}
       </ul>
-    </CSSTransition>
-      
+    </Animate>
     )
   }
   

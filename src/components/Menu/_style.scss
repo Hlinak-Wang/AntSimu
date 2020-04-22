@@ -69,21 +69,3 @@
   @include subMenu-style('bottom');
   
 }
-
-.submenu-animate-enter {
-  opacity: 0;
-}
-
-.submenu-animate-enter-active {
-  opacity: 1;
-  transition: opacity 300ms;
-}
-
-.submenu-animate-exit {
-  opacity: 1;
-}
-
-.submenu-animate-exit-active {
-  opacity: 0;
-  transition: opacity 300ms;
-}

@@ -54,7 +54,7 @@ const Menu: React.FC<MenuProps> = (props) => {
       const displayName = childElement.type.displayName || childElement.type.name;
       if (displayName === 'MenuItem' || displayName === 'SubMenu') {
         return React.cloneElement(childElement, {
-          index: index.toString()
+          key: index.toString()
         });
       } else {
         console.error("Menu has a child which is not MenuItem component")
