@@ -1,39 +1,40 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import classnames from 'classnames';
 import { MenuContext } from './menu';
+import Animate from '../Animate/animate';
 
 export interface MenuItemProps {
-  key: string;
+  handleKey: string;
   disabled?:boolean;
   className?:string;
   style?:React.CSSProperties;
-  clickRes?: () => void
+  clickRes?: () => void;
 }
 
 const MenuItem:React.FC<MenuItemProps> = (props) => {
   const {
-    key,
+    handleKey,
     disabled,
     className,
     style,
     children,
     clickRes
   } = props;
-
-  const context = useContext(MenuContext)
+  
+  const context = useContext(MenuContext);
   const classes = classnames('menu-item', className, {
     'is-disabled': disabled,
-    'is-active': key === context.index
-  })
+    'is-active': context.selectKey.findIndex(v => v === handleKey) >= 0
+  });
 
   const handleClick = () => {
-    if (context.onSelect && !disabled && (typeof key === 'string')) {
-      context.onSelect(key)
+    if (context.onSelect && !disabled) {
+      context.onSelect(handleKey)
     }
     if (clickRes) {
       clickRes()
     }
-  }
+  };
 
   return (
     <li className={classes} style={style} onClick={handleClick}>

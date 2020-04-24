@@ -7,6 +7,7 @@
   .menu-item {
     cursor: pointer;
     transition: $menu-transition;
+    position: relative;
     &:hover, &:focus {
       text-decoration: none;
     }
@@ -23,20 +24,20 @@
   }
 }
 
-.menu-left {
-  @include menu-style('left');
+.menu-vertical {
+  @include menu-style('vertical');
 }
 
-.menu-left .submenu {
-  @include subMenu-style('left');
+.menu-vertical .submenu {
+  @include subMenu-style('vertical');
 }
 
-.menu-top {
-  @include menu-style('top');
+.menu-horizontal {
+  @include menu-style('horizontal');
 }
 
-.menu-top .submenu {
-  @include subMenu-style('top');
+.menu-horizontal .submenu {
+  @include subMenu-style('horizontal');
   .submenu-title {
     &::after {
       content: '>';
@@ -45,7 +46,7 @@
   }
 }
 
-.menu-top > .submenu {
+.menu-horizontal > .submenu {
   > .submenu-title {
     &::after {
       content: '';
@@ -53,19 +54,38 @@
   }
 }
 
-.menu-right {
-  @include menu-style('right');
-}
+.arrow-horizontal {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 5px;
+  &::before {
+    content: '';
+    transform: rotate(-45deg) translateX(2px);
+    width: 6px;
+    height: 1.5px;
+    background: black;
+    position: absolute;
+    border-radius: 2px;
+    transition: transform .3s cubic-bezier(.645,.045,.355,1);
+  }
 
-.menu-right .submenu {
-  @include subMenu-style('right');
-}
+  &::after {
+    content: "";
+    transform: rotate(45deg) translateX(-2px);
+    width: 6px;
+    height: 1.5px;
+    background: black;
+    position: absolute;
+    border-radius: 2px;
+    transition: transform .3s cubic-bezier(.645,.045,.355,1);
+  }
 
-.menu-bottom {
-  @include menu-style('bottom');
-}
+  &.open::before {
+    transform: rotate(45deg) translateY(-2px);
+  }
 
-.menu-bottom .submenu {
-  @include subMenu-style('bottom');
-  
+  &.open::after {
+    transform: rotate(-45deg) translateY(-2px);
+  }
 }

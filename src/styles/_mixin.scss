@@ -38,52 +38,69 @@
 @mixin menu-style(
   $mode
 ) {
-  @if $mode == 'right' or $mode == 'left' {
+  @if $mode == 'vertical' {
     flex-direction: column;
     margin-bottom: 0px;
-    @if $mode == 'right' {
-      border-left: $menu-border-width solid $menu-border-color;
-    } @else if $mode == 'left' {
-      border-right: $menu-border-width solid $menu-border-color;
-    } 
 
     > .menu-item {
       padding: $menu-item-padding-vertical;
-      @if $mode == 'right' {
-        border-left: $menu-item-active-border-width solid transparent;
-        &.is-active, &:hover {
-          border-left: $menu-item-active-border-width solid $menu-item-active-color;
-        }
-      } @else if $mode == 'left' {
-        border-right: $menu-item-active-border-width solid transparent; 
-        &.is-active, &:hover {
-          border-right: $menu-item-active-border-width solid $menu-item-active-color;
-        }
+      position: relative;
+      &::after {
+        content: "";
+        position: absolute;
+        opacity: 0;
+        bottom: 0;
+        top:0;
+        right: 0;
+        left: 0;
+        background: rgba($primary, 0.2);
+        border-right: 3px solid $primary;
+        transform: scaleY(0);
+        transition: transform 0.3s cubic-bezier(.645,.045,.355,1),opacity 0.3s cubic-bezier(.645,.045,.355,1);
+      }
+
+      &.is-active::after {
+        opacity: 1;
+        transform: scaleY(1);
+        transition: transform 0.3s cubic-bezier(.215,.61,.355,1),opacity 0.3s cubic-bezier(.215,.61,.355,1)
+      }
+      
+      &:hover {
+        color: $primary;
       }
     }
-    
-  } @else if $mode == 'top' or $mode == 'bottom' {
+
+  } @else if $mode == 'horizontal' {
     flex-direction: row;
     margin-bottom: 30px;
-    
-    @if $mode == 'top' {
-      border-bottom: $menu-border-width solid $menu-border-color;
-    } @else if $mode == 'bottom' {
-      border-top: $menu-border-width solid $menu-border-color;
-    }
+    border-bottom: $menu-border-width solid $menu-border-color;
 
     > .menu-item {
       padding: .5rem 1rem;
-      @if $mode == 'top' {
-        border-bottom: $menu-item-active-border-width solid transparent;
-        &.is-active, &:hover {
-          border-bottom: $menu-item-active-border-width solid $menu-item-active-color;
-        }
-      } @else if $mode == 'bottom' {
-        border-top: $menu-item-active-border-width solid transparent;
-        &.is-active, &:hover {
-          border-top: $menu-item-active-border-width solid $menu-item-active-color;
-        }
+      position: relative;
+      margin-bottom: -1px;
+      &::after {
+        content: "";
+        position: absolute;
+        opacity: 0;
+        bottom: 0;
+        top:0;
+        right: 0;
+        left: 0;
+        background: rgba($primary, 0.2);
+        border-bottom: 3px solid $primary;
+        transform: scaleX(0);
+        transition: transform 0.3s cubic-bezier(.645,.045,.355,1),opacity 0.3s cubic-bezier(.645,.045,.355,1);
+      }
+
+      &.is-active::after {
+        opacity: 1;
+        transform: scaleX(1);
+        transition: transform 0.3s cubic-bezier(.215,.61,.355,1),opacity 0.3s cubic-bezier(.215,.61,.355,1)
+      }
+      
+      &:hover {
+        color: $primary;
       }
     }
   }
@@ -97,9 +114,9 @@
   cursor: pointer;
   transition: $menu-transition;
   position: relative;
-  @if $mode == 'top' or $mode == 'bottom' {
+  @if $mode == 'horizontal' {
     padding: $menu-item-padding-horizontal;
-  } @else if $mode == 'right' or $mode == 'left' {
+  } @else if $mode == 'vertical' {
     padding: $menu-item-padding-vertical;
   }
 
@@ -108,8 +125,9 @@
       color: $menu-item-active-color;
     }
   }
-  > &.child-seleted {
-    @if $mode == 'top' or $mode == 'bottom' {
+  
+  @if $mode == 'horizontal' {
+    > &.child-selected {
       border-bottom: $menu-item-active-border-width solid $menu-item-active-color;
     }
   }
@@ -119,17 +137,13 @@
     padding: 0;
     white-space: nowrap;
     background: white;
-    @if $mode == 'top' or $mode == 'bottom' {
+    @if $mode == 'horizontal' {
       min-width: 160px;
       position: absolute;
       box-shadow: $submenu-box-shadow;
       left: 0;
       z-index: 1;
-      @if $mode == 'top' {
-        top: 50px;
-      } @else if $mode == 'bottom' {
-        bottom: 50px;
-      }
+      top: 50px;
     }
 
     .submenu-item {
@@ -148,11 +162,7 @@
 
     &.is-active {
       background: lighten($primary, 40%);
-      @if $mode == 'right' {
-        border-left: $menu-item-active-border-width solid $menu-item-active-color;
-      } @else if $mode == 'left' {
-        border-right: $menu-item-active-border-width solid $menu-item-active-color;
-      }
+      border-right: $menu-item-active-border-width solid $menu-item-active-color;
     }
   }
 }

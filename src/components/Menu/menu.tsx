@@ -1,25 +1,29 @@
-import React, { useState, createContext } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 import classnames from 'classnames';
 import { MenuItemProps } from './menuItem';
+import { Context } from '@emotion/stylis';
 
-type MenuMode = 'left' | 'top' | 'right' | 'bottom';
+type MenuMode = 'horizontal' | 'vertical';
 type SelectCallBack = (selectIndex: string) => void;
 
 export interface MenuProps {
   mode?: MenuMode;
-  defaultIndex?: string;
+  defaultIndex?: string[];
   className?: string;
   style?:React.CSSProperties;
-  onSelect?:SelectCallBack
+  onSelect?:SelectCallBack;
+  multiple?: boolean;
+  inline?: boolean;
 }
-
+ 
 interface IMenuContext {
-  index: string;
+  selectKey: string[];
   onSelect?: SelectCallBack;
   mode?:MenuMode;
+  inline?:boolean;
 }
 
-export const MenuContext = createContext<IMenuContext>({ index: "0" })
+export const MenuContext = createContext<IMenuContext>({selectKey: []})
 
 const Menu: React.FC<MenuProps> = (props) => {
   const {
@@ -28,51 +32,67 @@ const Menu: React.FC<MenuProps> = (props) => {
     className,
     style,
     onSelect,
+    multiple,
+    inline,
     children
   } = props;
 
-  const [ currentActive, setActive ] = useState(defaultIndex)
+  const [ currentActive, setActive ] = useState(defaultIndex ? defaultIndex : []);
 
+  useEffect(() => {
+    React.Children.forEach(children, (child) => {
+      const childElement = child as React.FunctionComponentElement<MenuItemProps>;
+      const displayName = childElement.type.displayName || childElement.type.name;
+      if (displayName !== 'MenuItem' && displayName !== 'SubMenu') {
+        console.error("Menu has a child which is not MenuItem or SubMenu component")
+      }
+    })
+  }, [children]);
+
+  
   const handleClick = (index: string) => {
-    setActive(index);
-    onSelect && onSelect(index)
+    if (multiple) {
+      const activeIndex = currentActive.findIndex(e => e === index);
+      if (activeIndex >= 0) {
+        setActive(v => {
+          const a = [...v]
+          a.splice(activeIndex, 1)
+          return a;
+        });
+      } else {
+        setActive(v => [...v, index]);
+      }
+    } else {
+      setActive([index]);
+    }
+    
+    onSelect && onSelect(index) 
   }
 
   const passedContext: IMenuContext = {
-    index: currentActive ? currentActive : "0",
+    selectKey: currentActive ? [...currentActive] : [],
     onSelect: handleClick,
-    mode
+    mode,
+    inline
   }
 
   const classes = classnames('menu', className, {
     [`menu-${mode}`]: mode
   });
 
-  const renderChild = () => {
-    return React.Children.map(children, (child, index) => {
-      const childElement = child as React.FunctionComponentElement<MenuItemProps>;
-      const displayName = childElement.type.displayName || childElement.type.name;
-      if (displayName === 'MenuItem' || displayName === 'SubMenu') {
-        return React.cloneElement(childElement, {
-          key: index.toString()
-        });
-      } else {
-        console.error("Menu has a child which is not MenuItem component")
-      }
-    })
-  }
-
   return (
     <ul className={classes} data-testid="test-menu" style={style}>
       <MenuContext.Provider value={passedContext}>
-        {renderChild()}
+        {children}
       </MenuContext.Provider>
     </ul>
   )
 }
 
+
 Menu.defaultProps = {
-  mode: 'left',
-  defaultIndex: "0"
+  mode: 'vertical',
+  multiple: false,
+  inline: false
 }
 export default Menu;
