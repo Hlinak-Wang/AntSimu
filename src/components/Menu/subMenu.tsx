@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import classnames from 'classnames';
 import { MenuContext } from './menu'
 import { MenuItemProps } from './menuItem';
@@ -20,7 +20,8 @@ const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled,
   const [menuOpen, setOpen] = useState(false);
   const [childSelect, setStatus] = useState(false);
   const context = useContext(MenuContext);
-  
+  const subContainRef = useRef<HTMLLIElement | null>(null)
+
   function loopCheck(children: React.ReactNode[]):boolean {
     
     for (let i = 0; i < children.length; i++) {
@@ -31,7 +32,7 @@ const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled,
         let subChildList = React.Children.toArray(subChild.props.children);
         return loopCheck(subChildList);
       } else {
-        if (context.selectKey.indexOf(childElement.props.handleKey) >= 0) {
+        if (context.selectKey.findIndex(value => value === childElement.props.handleKey) >= 0) {
           return true;
         }
       }
@@ -40,24 +41,28 @@ const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled,
   }
 
   useEffect(() => {
-    
+    console.log("efftec")
+    setStatus(false)
     React.Children.forEach(children, child => {
       const childElement = child as React.FunctionComponentElement<MenuItemProps>;
-      console.log(childElement)
       const displayName = childElement.type.displayName || childElement.type.name;
+      console.log(childElement)
       if (displayName === 'SubMenu') {
-        
         const subChild = child as React.FunctionComponentElement<SubMenuProps>;
         const subChildList = React.Children.toArray(subChild.props.children);
         if (loopCheck(subChildList)) {
+          console.log("been")
           setStatus(true);
-        }        
+        }  
       } else {
-        if (context.selectKey.indexOf(childElement.props.handleKey) >= 0) {
+        console.log(childSelect)
+        if (context.selectKey.findIndex(value => value === childElement.props.handleKey) >= 0) {
+          console.log("setrue")
           setStatus(true)
         }
       }
     })
+    console.log(context.selectKey)
   }, [context.selectKey])
 
   const classes = classnames('submenu', className, {
@@ -79,11 +84,11 @@ const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled,
     setOpen(!menuOpen);
   }
 
-  const clickEvent = context.mode === 'vertical'
+  const clickEvent = context.inline
     ? {onClick: handleClick} 
     : {};
   
-  const mouseEvent = context.mode === 'horizontal' ? {
+  const mouseEvent = !context.inline ? {
     onMouseEnter: () => {handleMouse(true, 50)},
     onMouseLeave: () => {handleMouse(false, 50)}
   } : {};
@@ -94,19 +99,24 @@ const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled,
       const childElement = child as React.FunctionComponentElement<MenuItemProps>;
       const displayName = childElement.type.displayName || childElement.type.name;
       if (displayName === 'MenuItem' || displayName === 'SubMenu') {
-        if (context.inline) {
-          return childElement;
-        } else {
-          return React.cloneElement(childElement, {
+        return context.inline 
+          ? childElement
+          : React.cloneElement(childElement, {
             // 给子级传入handleMouse 函数， 当点击事件在子级触发时执行，并且handleMouse触发以umount父级，并且如果有父级的父级的话在50ms的延迟下再unmount父级的父级
             clickRes: () => {handleMouse(false, 50); setTimeout(() => {clickRes && clickRes()}, 50)}
           })
-        }
         
       } else {
         console.error("Menu has a child which is not MenuItem component")
       }
     })
+
+    let subMenuPosition;
+    if (clickRes !== undefined || context.mode === 'vertical') {
+      subMenuPosition = {top: "0", left: subContainRef.current ? `${subContainRef.current.clientWidth + 5}px` : "50px"}
+    } else {
+      subMenuPosition = {left: "0", top: subContainRef.current ? `${subContainRef.current.clientHeight + 5}px` : "50px"}
+    }
 
     return (
     <Animate
@@ -114,7 +124,10 @@ const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled,
       timeout={300}
       classNames={`pull-out-top`}
     >
-      <ul className="submenu-item">
+      <ul 
+        className={`subItem-container ${context.inline? 'inline': "outline"}`} 
+        style={subMenuPosition}
+      >
         {childrenComponent}
       </ul>
     </Animate>
@@ -122,10 +135,10 @@ const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled,
   }
   
   return (
-    <li className={classes} {...mouseEvent}>
+    <li className={classes} {...mouseEvent} ref={subContainRef}>
       <div className="submenu-title" {...clickEvent}>
         { title }
-        <div className={`arrow-${context.mode} ${menuOpen ? 'open' : "" }`}/>
+        <div className={`arrow-${context.inline || context.mode === 'horizontal' ? "up-down": "left-right"} ${menuOpen ? 'open' : "" }`}/>
       </div>
       { renderChild() }
     </li>

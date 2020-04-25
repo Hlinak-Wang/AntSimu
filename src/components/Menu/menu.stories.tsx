@@ -37,7 +37,7 @@ storiesOf('Menu 菜单', module)
   ))
   .add('垂直菜单', () => (
     <> 
-      <Menu mode="vertical" style={{width: "256px", float: "left"}} inline>
+      <Menu mode="vertical" style={{width: "100px", float: "left"}}>
         <MenuItem handleKey="1">
           123
         </MenuItem>
@@ -57,6 +57,7 @@ storiesOf('Menu 菜单', module)
     </>
   ))
   .add('设置inline属性', () => (
+    <>
     <Menu mode="horizontal" inline>
         <MenuItem handleKey="1">
           123
@@ -90,4 +91,22 @@ storiesOf('Menu 菜单', module)
           123
         </MenuItem>
       </Menu>
+      <Menu mode="vertical" style={{width: "100px", float: "left"}} inline>
+        <MenuItem handleKey="1">
+          123
+        </MenuItem>
+        <MenuItem handleKey="2">
+          123
+        </MenuItem>
+        <SubMenu title="sub" handleKey="g1">
+          <MenuItem handleKey="5">
+            123
+          </MenuItem>
+          <MenuItem handleKey="6">
+            123
+          </MenuItem>
+
+        </SubMenu>
+      </Menu>
+      </>
   ))
