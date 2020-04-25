@@ -1,0 +1,146 @@
+@mixin tabs-basic-style(
+  $container-padding,
+  $content-float,
+) {
+  .tabs-label-container {
+    position: relative;
+    height: 100%;
+    display: block;
+    padding: $container-padding;
+  }
+
+  .tabs-content-container {
+    height: 100%;
+    display: block;
+    float: $content-float;
+  }
+
+  .show-container {
+    overflow: hidden;
+    height: 100%;
+    position: relative;
+    &::before {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      content: '';
+      box-shadow: inset 15px 0 15px -15px #fff,
+                  inset -15px 0 15px -15px #fff;
+      pointer-events: none;
+      z-index: 2;
+    }
+  }
+
+  .prev-button {
+    position: absolute;
+    cursor: pointer;
+    &.tabs-btn-diabled {
+      color: $gray-5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+
+  .next-button {
+    position: absolute;
+    cursor: pointer;
+    &.tabs-btn-diabled {
+      color: $gray-5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+}
+
+@mixin tabs-label-style(
+  $label-float,
+  $label-margin-direction,
+  $label-border-direction
+) {
+  .tabs-label-container {
+    float: $label-float;
+    margin-#{$label-margin-direction}: 1rem;
+  }
+
+  .tabs-label {
+    border-#{$label-border-direction}: 1px solid $gray-3;
+  }
+}
+
+@mixin tabs-inline-style(
+  $label-item-display,
+  $label-item-padding,
+  $label-item-maring
+) {
+  .label-item {
+    display: $label-item-display;
+    padding: $label-item-padding;
+    margin: $label-item-maring;
+    &.active {
+      color: $primary;
+    }
+
+    &.disabled {
+      color: $gray-5;
+      pointer-events: none;
+    }
+  }
+
+  .tabs-slider {
+    display: block;
+    position: absolute;
+    z-index: 1;
+    background: $primary;
+    transition: transform 0.3s ease-in-out, width 0.4s ease-out, color 0.6s ease-in-out
+  }
+}
+
+@mixin basic-tabs-card-style(
+  $label-item-display,
+  $label-item-padding,
+  $label-item-maring
+) {
+  .label-item {
+    display: $label-item-display;
+    padding: $label-item-padding;
+    margin: $label-item-maring;
+    background: $gray-1;
+    border: 1px solid $gray-3;
+    transition: color 0.3s ease-in, padding 0.3s ease-in-out;
+    &.active {
+      color: $primary; 
+      background: $white;
+    }
+  }
+
+  .tabs-slider {
+    display: block;
+    position: absolute;
+    z-index: 1;
+    background: transparent;
+    transition: transform 0.3s ease-in-out, width 0.4s ease-out, color 0.6s ease-in-out
+  } 
+}
+
+@mixin tabs-card-direction-style(
+  $effect-direction,
+  $border-radius,
+  $padding
+) {
+  .show-container {
+    margin-#{$effect-direction}: -1px;
+    .tabs-label {
+      border-#{$effect-direction}: 1px solid $gray-3;
+      .label-item{
+        border-radius: $border-radius;
+        margin-#{$effect-direction}: -1px;
+        &.active {
+          border-#{$effect-direction}: 1px solid $white;
+          padding: $padding;
+        }
+      }
+    }
+  }
+}
