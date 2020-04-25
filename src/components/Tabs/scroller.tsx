@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef, useEffect, useReducer } from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { TabsItemProps } from './tabsItem';
 import SliderBar from './sliderBar';
 import classnames from 'classnames';
@@ -26,17 +26,29 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
     }
   }, []);
 
-  const test = useCallback((e: WheelEvent) => {
+  const scrollEventCallback = useCallback((e: WheelEvent) => {
     handleScroll(e)
   }, [shiftX, shiftY]);
 
+  function handleScroll(e: WheelEvent) {
+    e.preventDefault();
+    if (e.deltaY <= 0) {
+      // scroll top
+      prev();
+    } else if (e.deltaY > 0){
+      // scroll down
+      next();
+    }
+  }
+
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.addEventListener('wheel', test, { passive: false });
+      scrollRef.current.addEventListener('wheel', scrollEventCallback, { passive: false });
     }
+    
     return () => {
       if (scrollRef.current) {
-        scrollRef.current.removeEventListener('wheel', test);
+        scrollRef.current.removeEventListener('wheel', scrollEventCallback);
       }
     }
   }, [shiftX, shiftY])
@@ -47,7 +59,8 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
       const displayName = childElement.type.displayName || childElement.type.name;
       if (displayName === 'TabsItem') {
         const cls = classnames('label-item', { 
-          active: activeIndex === index
+          active: activeIndex === index,
+          disabled: childElement.props.disabled
         }) 
         
         return (
@@ -137,28 +150,25 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
     }
 
     if (direction === 'horizontal') {
+      if (shiftX - containRef.current.clientWidth <= -scrollRef.current.clientWidth) {
+        return;
+      }
+
       if (shiftX - 2 * containRef.current.clientWidth < -scrollRef.current.clientWidth) {
         setShiftX(containRef.current.clientWidth - scrollRef.current.clientWidth);
       } else if (shiftX - containRef.current.clientWidth > -scrollRef.current.clientWidth) {
         setShiftX(shiftX - containRef.current.clientWidth);
       }
     } else if (direction === 'vertical') {
+      if ( shiftY - containRef.current.clientHeight <= -scrollRef.current.clientHeight) {
+        return;
+      }
+
       if (shiftY - 2 * containRef.current.clientHeight < -scrollRef.current.clientHeight) {
         setShiftY(containRef.current.clientHeight - scrollRef.current.clientHeight);
       } else if (shiftY - containRef.current.clientHeight > -scrollRef.current.clientHeight) {
         setShiftY(shiftY - containRef.current.clientHeight);
       } 
-    }
-  }
-
-  function handleScroll(e: WheelEvent) {
-    e.preventDefault();
-    console.log(e.deltaY)
-    if (e.deltaY <= 0) {
-      // scroll top
-      prev();
-    } else if (e.deltaY > 0){
-      next();
     }
   }
 

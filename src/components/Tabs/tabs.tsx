@@ -76,36 +76,6 @@ const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, closable, onEdit, 
     })
   }, [])
 
-  const renderTabs = () => {
-    const Label = React.Children.map(children, (child, index) => {
-      const childElement = child as React.FunctionComponentElement<TabsItemProps>;
-      const displayName = childElement.type.displayName || childElement.type.name;
-      
-      if (displayName === 'TabsItem') {
-        const cls = classnames('label-item', { 
-          active: context.index === index
-        })
-        return React.cloneElement(<div onClick={() => context.onTabClick(index)}>{childElement.props.label}</div>, {
-          ref: context.index === index ? testRef : null,
-          className: cls
-        })
-      } else {
-        console.error("Tabs has a child which is not TabsItem component")
-      }
-    })
-
-    return (
-      <>
-      <Scroller 
-        activeIndex={context.index} 
-        direction={TabPosition === 'bottom' || TabPosition === 'top' ? 'horizontal' : 'vertical'} 
-        items={children}
-        changeActive={context.onTabClick}
-      />
-      </>
-    )
-  }
-
   const renderContent = () => {
     const Content = React.Children.map(children , (child, index) => {
       const childElement = child as React.FunctionComponentElement<TabsItemProps>;
@@ -134,11 +104,26 @@ const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, closable, onEdit, 
   return (
     <div className={itemClass} style={style}>
       <TabsContext.Provider value={context}>
-        {renderTabs()}
         {
-          /* TabPosition === 'bottom' 
-          ? <>{renderContent()}<TabsLabel labels={labels} rmTabs={removeTabs} /></>
-          : <><TabsLabel labels={labels} rmTabs={removeTabs} />{renderContent()}</> */
+          TabPosition === 'bottom' 
+          ? <>
+            {renderContent()}
+            <Scroller 
+              activeIndex={context.index} 
+              direction={TabPosition === 'bottom' || TabPosition === 'top' ? 'horizontal' : 'vertical'} 
+              items={children}
+              changeActive={context.onTabClick}
+            />
+          </>
+          : <>
+            <Scroller 
+              activeIndex={context.index} 
+              direction='horizontal'
+              items={children}
+              changeActive={context.onTabClick}
+            />
+            {renderContent()}
+          </>
         }
       </TabsContext.Provider>
     </div>

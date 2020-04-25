@@ -6,45 +6,138 @@ import { actions } from '@storybook/addon-actions';
 
 storiesOf('Tabs', module)
   .add('基础样式', () => (
-    <Tabs>
-      <TabsItem label="1">
-        hello
+    <Tabs type="card">
+      <TabsItem label="1" disabled>
+        label 1
       </TabsItem>
       <TabsItem label="2">
-        hello
+        label 2
       </TabsItem>
       <TabsItem label="3">
-        hello
+        label 3
       </TabsItem>
       <TabsItem label="4">
-        hello
+        label 4
       </TabsItem>
       <TabsItem label="5">
-        hello
+        label 5
       </TabsItem>
       <TabsItem label="6">
-        hello
+        label 6
       </TabsItem>
       <TabsItem label="7">
-        hello
+        label 7
       </TabsItem>
-      <TabsItem label="8">
-        hello
+      <TabsItem label="4">
+        label 4
       </TabsItem>
-      <TabsItem label="9">
-        hello
+      <TabsItem label="5">
+        label 5
       </TabsItem>
-      <TabsItem label="10">
-        hello
+      <TabsItem label="6">
+        label 6
       </TabsItem>
-      <TabsItem label="11">
-        hello
+      <TabsItem label="7">
+        label 7
       </TabsItem>
-      <TabsItem label="12">
-        hello
+      <TabsItem label="4">
+        label 4
       </TabsItem>
-      <TabsItem label="13">
-        hello
+      <TabsItem label="5">
+        label 5
+      </TabsItem>
+      <TabsItem label="6">
+        label 6
+      </TabsItem>
+      <TabsItem label="7">
+        label 7
+      </TabsItem>
+      <TabsItem label="4">
+        label 4
+      </TabsItem>
+      <TabsItem label="5">
+        label 5
+      </TabsItem>
+      <TabsItem label="6">
+        label 6
+      </TabsItem>
+      <TabsItem label="7">
+        label 7
+      </TabsItem>
+    </Tabs>
+  ))
+  .add('可设置方向', () => (
+    <Tabs TabPosition="bottom" type="card">
+      <TabsItem label="1" disabled>
+        label 1
+      </TabsItem>
+      <TabsItem label="2">
+        label 2
+      </TabsItem>
+      <TabsItem label="3">
+        label 3
+      </TabsItem>
+      <TabsItem label="4">
+        label 4
+      </TabsItem>
+      <TabsItem label="5">
+        label 5
+      </TabsItem>
+      <TabsItem label="6">
+        label 6
+      </TabsItem>
+      <TabsItem label="7">
+        label 7
+      </TabsItem>
+    </Tabs>
+  ))
+  .add('left', () => (
+    <Tabs TabPosition="left" type="card">
+      <TabsItem label="1">
+        label 1
+      </TabsItem>
+      <TabsItem label="2">
+        label 2
+      </TabsItem>
+      <TabsItem label="3">
+        label 3
+      </TabsItem>
+      <TabsItem label="4">
+        label 4
+      </TabsItem>
+      <TabsItem label="5">
+        label 5
+      </TabsItem>
+      <TabsItem label="6">
+        label 6
+      </TabsItem>
+      <TabsItem label="7">
+        label 7
+      </TabsItem>
+    </Tabs>
+  ))
+  .add('right', () => (
+    <Tabs TabPosition="right" type="card">
+      <TabsItem label="1">
+        label 1
+      </TabsItem>
+      <TabsItem label="2">
+        label 2
+      </TabsItem>
+      <TabsItem label="3">
+        label 3
+      </TabsItem>
+      <TabsItem label="4">
+        label 4
+      </TabsItem>
+      <TabsItem label="5">
+        label 5
+      </TabsItem>
+      <TabsItem label="6">
+        label 6
+      </TabsItem>
+      <TabsItem label="7">
+        label 7
       </TabsItem>
     </Tabs>
   ))
