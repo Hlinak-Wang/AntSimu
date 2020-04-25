@@ -38,13 +38,14 @@
 @mixin menu-style(
   $mode
 ) {
-  @if $mode == 'vertical' {
+  @if $mode == vertical {
     flex-direction: column;
     margin-bottom: 0px;
-
-    > .menu-item {
+    border-right: 1px solid $gray-3;
+     > .menu-item {
       padding: $menu-item-padding-vertical;
       position: relative;
+      margin-right: -1px;
       &::after {
         content: "";
         position: absolute;
@@ -70,7 +71,7 @@
       }
     }
 
-  } @else if $mode == 'horizontal' {
+  } @else if $mode == horizontal {
     flex-direction: row;
     margin-bottom: 30px;
     border-bottom: $menu-border-width solid $menu-border-color;
@@ -79,90 +80,88 @@
       padding: .5rem 1rem;
       position: relative;
       margin-bottom: -1px;
-      &::after {
-        content: "";
-        position: absolute;
-        opacity: 0;
-        bottom: 0;
-        top:0;
-        right: 0;
-        left: 0;
-        background: rgba($primary, 0.2);
-        border-bottom: 3px solid $primary;
-        transform: scaleX(0);
-        transition: transform 0.3s cubic-bezier(.645,.045,.355,1),opacity 0.3s cubic-bezier(.645,.045,.355,1);
-      }
-
-      &.is-active::after {
-        opacity: 1;
-        transform: scaleX(1);
-        transition: transform 0.3s cubic-bezier(.215,.61,.355,1),opacity 0.3s cubic-bezier(.215,.61,.355,1)
-      }
       
       &:hover {
         color: $primary;
       }
     }
+
+    @include menu-selected(menu-item, horizontal);
   }
 }
 
-
-@mixin subMenu-style(
-  $mode
-) {
+@mixin basic-subMenu-style($mode) {
   border-left: $menu-item-active-border-width solid transparent; 
   cursor: pointer;
   transition: $menu-transition;
   position: relative;
-  @if $mode == 'horizontal' {
+  @if $mode == horizontal {
     padding: $menu-item-padding-horizontal;
-  } @else if $mode == 'vertical' {
+  } @else if $mode == vertical {
     padding: $menu-item-padding-vertical;
+  }
+
+  .submenu-title:hover {
+    color: $primary;
+    .arrow-up-down {
+      &::after, &::before {
+        background: $primary;
+      }
+    }
   }
 
   &.child-selected {
     > .submenu-title {
       color: $menu-item-active-color;
+      .arrow-up-down {
+        &::after, &::before {
+          background: $primary;
+        }
+      }
+      
     }
   }
-  
-  @if $mode == 'horizontal' {
-    > &.child-selected {
+
+  @if $mode == horizontal {
+    &.child-selected {
       border-bottom: $menu-item-active-border-width solid $menu-item-active-color;
-    }
-  }
-
-  > .submenu-item {
-    list-style: none;
-    padding: 0;
-    white-space: nowrap;
-    background: white;
-    @if $mode == 'horizontal' {
-      min-width: 160px;
-      position: absolute;
-      box-shadow: $submenu-box-shadow;
-      left: 0;
-      z-index: 1;
-      top: 50px;
-    }
-
-    .submenu-item {
-      position: absolute;
-      top: 0;
-      left: 165px;
     }
   }
 
   .menu-item {
     list-style: none;
     padding: $menu-item-padding-vertical;
-    &.is-active, &:hover {
-      color: $menu-item-active-color;
+  }
+}
+
+@mixin subMenu-popup-style($mode) {
+  > .subItem-container {
+    list-style: none;
+    padding: 0;
+    white-space: nowrap;
+    background: white;
+    &.outline {
+      position: absolute;
+      min-width: 160px;
+      box-shadow: $submenu-box-shadow;
+      z-index: 1;
+      @include menu-selected(menu-item, vertical);
     }
 
-    &.is-active {
-      background: lighten($primary, 40%);
-      border-right: $menu-item-active-border-width solid $menu-item-active-color;
+    &.inline {
+      @if $mode == vertical {
+        @include menu-selected(menu-item, vertical);
+      }
+      @if $mode == horizontal {
+        display: flex;
+        position: absolute;
+        box-shadow: $submenu-box-shadow;
+        .menu-item {
+          flex-direction: row;
+          padding: $menu-item-padding-horizontal;
+        }
+        @include menu-selected(menu-item, horizontal);
+      }
     }
   }
 }
