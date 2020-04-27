@@ -33,23 +33,35 @@
     }
   }
 
-  .prev-button {
-    position: absolute;
+  .prev-button-container, .next-button-container {
     cursor: pointer;
     &.tabs-btn-diabled {
-      color: $gray-5;
       cursor: not-allowed;
-      pointer-events: none;
+      .prev-button, .next-button {
+        &::before {
+          background: $gray-5;
+          transform: rotate(-45deg);
+        }
+    
+        &::after {
+          background: $gray-5;
+          transform: rotate(45deg);
+        }
+      }
     }
   }
 
-  .next-button {
+  .prev-button, .next-button {
     position: absolute;
-    cursor: pointer;
-    &.tabs-btn-diabled {
-      color: $gray-5;
-      cursor: not-allowed;
-      pointer-events: none;
+    
+    &::before, &::after{
+      position: absolute;
+      content: "";
+      display: block;
+      width: 7px;
+      height: 1.5px;
+      background: black;
+      transition: transform 0.3s ease-in-out, background 0.3s ease-in-out;
     }
   }
 }
@@ -78,6 +90,7 @@
     display: $label-item-display;
     padding: $label-item-padding;
     margin: $label-item-maring;
+    transition: color 0.3s ease-in, padding 0.3s ease-in-out;
     &.active {
       color: $primary;
     }

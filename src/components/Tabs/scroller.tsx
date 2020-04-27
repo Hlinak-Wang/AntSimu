@@ -16,10 +16,8 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [shiftX, setShiftX] = useState<number>(0);
   const [shiftY, setShiftY] = useState<number>(0);
-  const [prevClass, setPrevClass] = useState<string>('');
-  const [nextClass, setNextClass] = useState<string>('');
-  const [activeNode, setActiveNode] = useState()
-  
+  const [activeNode, setActiveNode] = useState();
+
   const ActiveCall = useCallback(node => {
     if (node !== null) {
       setActiveNode(node)
@@ -31,12 +29,18 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
   }, [shiftX, shiftY]);
 
   function handleScroll(e: WheelEvent) {
-    e.preventDefault();
+
     if (e.deltaY <= 0) {
       // scroll top
+      if (prevAbleStatus()) {
+        e.preventDefault();
+      }
       prev();
     } else if (e.deltaY > 0){
       // scroll down
+      if (nextAbleStatus()) {
+        e.preventDefault();
+      }
       next();
     }
   }
@@ -80,6 +84,7 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
   }
 
   useEffect(() => {
+
     if (activeNode && scrollRef.current && containRef.current) {
       if (direction === 'horizontal') {
         if (activeNode.clientWidth + activeNode.offsetLeft + shiftX > containRef.current.clientWidth) {
@@ -98,25 +103,32 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
     }
   }, [activeNode]);
 
-  /**
-   * 提供实时确认 prev和next 按钮的状态（是否为disabled）
-   */
-  useEffect(() => {
-    if (containRef.current && scrollRef.current) {
-      if (shiftX || shiftY) {
-        setPrevClass('');
-      } else {
-        setPrevClass('tabs-btn-diabled');
-      }
-      
-      if (shiftX - containRef.current.clientWidth <= -scrollRef.current.clientWidth && shiftY - containRef.current.clientHeight <= -scrollRef.current.clientHeight) {
-        setNextClass('tabs-btn-diabled');
-      } else {
-        setNextClass('');
-      }
+  function prevAbleStatus() {
+    if (shiftX || shiftY) {
+      return true;
+    } else {
+      return false;
     }
-  }, [scrollRef.current,shiftX, shiftY])
+  }
 
+  function nextAbleStatus() {
+    if (containRef.current && scrollRef.current) {
+      if (direction === 'horizontal') {
+        // check horizontal
+        if (shiftX - containRef.current.clientWidth <= -scrollRef.current.clientWidth) {
+          return false;
+        }
+      } else {
+        // check vertical
+        if (shiftY - containRef.current.clientHeight <= -scrollRef.current.clientHeight) {
+          console.log("ver")
+          return false;
+        }
+      }
+    } 
+    return true;
+  }
+ 
   function prev() {
     if (!containRef.current) {
       console.error("can't get container DOM");
@@ -172,18 +184,27 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
     }
   }
 
+  const prevCls = classnames("prev-button-container", {
+    "tabs-btn-diabled": !prevAbleStatus()
+  })
+
+  const nextCls = classnames("next-button-container", {
+    "tabs-btn-diabled": !nextAbleStatus()
+  })
+
   return (
     <div className="tabs-label-container">
-      <div onClick={prev} className={classnames("prev-button", prevClass)}>
-        prev
+      <div onClick={prev} className={prevCls}>
+        <div className="prev-button"/>
       </div>
-      <div onClick={next} className={classnames("next-button", nextClass)}>
-        next
+      <div onClick={next} className={nextCls}>
+        <div className="next-button"/>
       </div>
+
       <div className="show-container" ref={containRef}>
         <div className="tabs-label" ref={scrollRef} style={{transform: `translate3d(${shiftX}px,${shiftY}px,0px)`}}>
           {renderTabs()}
-          <SliderBar activeRef={activeNode} direction="horizontal"/>
+          <SliderBar activeRef={activeNode} direction={direction}/>
         </div>
       </div>
     </div>

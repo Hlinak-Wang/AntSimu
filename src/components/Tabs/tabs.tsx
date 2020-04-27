@@ -118,7 +118,7 @@ const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, closable, onEdit, 
           : <>
             <Scroller 
               activeIndex={context.index} 
-              direction='horizontal'
+              direction={TabPosition === 'top' ? 'horizontal' : 'vertical'}
               items={children}
               changeActive={context.onTabClick}
             />
