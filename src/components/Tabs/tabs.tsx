@@ -1,64 +1,87 @@
-import React, { createContext, useState, useRef, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import classnames from 'classnames';
-import { TabsItemProps } from './tabsItem';
-import TabsLabel, { Ilabel } from './tabsLabel';
 import Scroller from './scroller';
+import TabsContent from './tabsContent'
 
 type TabsType = 'inline' | 'card';
 type TabsSize = 'small' | 'default' | 'large';
 type TabPosition = 'top' | 'bottom' | 'right' | 'left';
+
+export interface TabsItemProps {
+  label: React.ReactNode;
+  closable?: boolean;
+  style?:React.CSSProperties;
+  disabled?:boolean;
+  key: string;
+  children:React.ReactNode;
+}
 
 interface TabsProps {
   disabled?:boolean;
   children: React.ReactNode;
   type?: TabsType;
   size?: TabsSize;
+  defaultActiveKey?: string;
+  tabBarExtraContent?: React.ReactNode;
   TabPosition?: TabPosition;
   onTabClick?: Function;
   onNextClick?: Function;
   onPrevClick?: Function;
   style?: React.CSSProperties;
   closable?: boolean;
-  onEdit?: (targetIndex: number, action: 'add' | 'remove') => void;
+  onEdit?: (targetIndex: string, action: 'add' | 'remove') => void;
 }
 
 export interface ITabsContext {
-  index: number;
+  activeKey?: string;
   TabPosition?: TabPosition;
   closable?: boolean;
-  onTabClick?: (index: number) => void;
+  tabClickRes?: (index: string) => void;
 }
 
-export const TabsContext = createContext<ITabsContext>({index: 0});
+export class TabsItem extends React.Component<TabsItemProps>{}
 
-const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, closable, onEdit, onTabClick, style, children }) => {
+export const TabsContext = createContext<ITabsContext>({});
+
+const Tabs: React.FC<TabsProps> = (props) => {
   
-  const [selectedIndex, setSelect] = useState(0);
-  const [labels, setLabel] = useState<Ilabel[]>([]);
-  const testRef = useRef<HTMLDivElement | null>(null);
+  const { 
+    type, 
+    size, 
+    defaultActiveKey, 
+    tabBarExtraContent, 
+    TabPosition, 
+    closable, 
+    onEdit, 
+    onTabClick, 
+    style, 
+    children 
+  } = props;
 
-  function handleSelect(index: number) {
+  const [activeKey, setSelect] = useState(defaultActiveKey);
+
+  function handleSelect(index: string) {
     setSelect(index);
     onTabClick && onTabClick();
   }
 
   const context = {
-    index: selectedIndex,
+    activeKey,
     TabPosition,
     closable,
-    onTabClick: handleSelect
+    tabClickRes: handleSelect
   }
 
-  const removeTabs = (targetIndex: number, e: React.MouseEvent<HTMLElement>) => {
+  const removeTabs = (targetKey: string, e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     if (onEdit) {
-      onEdit(targetIndex, 'remove')
+      onEdit(targetKey, 'remove')
     }
   }
 
-  const addTabs = (targetIndex: number) => {
+  const addTabs = (targetKey: string) => {
     if (onEdit) {
-      onEdit(targetIndex, 'add')
+      onEdit(targetKey, 'add')
     }
   }
 
@@ -66,32 +89,11 @@ const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, closable, onEdit, 
     React.Children.forEach(children, (child, index) => {
       const childElement = child as React.FunctionComponentElement<TabsItemProps>;
       const displayName = childElement.type.displayName || childElement.type.name;
-      if (displayName === 'TabsItem') {
-        const disabledLabel = childElement.props.disabled || false;
-        const closable = childElement.props.closable || false;
-        setLabel(v => [...v, {index, label:childElement.props.label, disabled: disabledLabel, closable}]);
-      } else {
+      if (displayName !== 'TabsItem') {
         console.error("Tabs has a child which is not TabsItem component")
       }
     })
-  }, [])
-
-  const renderContent = () => {
-    const Content = React.Children.map(children , (child, index) => {
-      const childElement = child as React.FunctionComponentElement<TabsItemProps>;
-      const displayName = childElement.type.displayName || childElement.type.name;
-      if (displayName === 'TabsItem') {
-        return React.cloneElement(childElement, {index})
-      } else {
-        console.error("Tabs has a child which is not TabsItem component")
-      }
-    })
-    return (
-      <div className="tabs-content-container">
-        {Content}
-      </div>
-    )
-  }
+  }, [children])
 
   const itemClass = classnames('tabs', 
     `tabs-${type}`, 
@@ -99,30 +101,36 @@ const Tabs: React.FC<TabsProps> = ({ type, size, TabPosition, closable, onEdit, 
     `tabs-${TabPosition}`
   )
 
-  
-
   return (
     <div className={itemClass} style={style}>
       <TabsContext.Provider value={context}>
         {
           TabPosition === 'bottom' 
           ? <>
-            {renderContent()}
-            <Scroller 
-              activeIndex={context.index} 
-              direction={TabPosition === 'bottom' || TabPosition === 'top' ? 'horizontal' : 'vertical'} 
+            
+            <TabsContent 
               items={children}
-              changeActive={context.onTabClick}
             />
+            <div className="tabs-labels-container">
+              {tabBarExtraContent}
+              <Scroller 
+                direction={TabPosition === 'bottom' || TabPosition === 'top' ? 'horizontal' : 'vertical'} 
+                items={children}
+              />
+            </div>
+            
           </>
           : <>
-            <Scroller 
-              activeIndex={context.index} 
-              direction={TabPosition === 'top' ? 'horizontal' : 'vertical'}
+            <div className="tabs-labels-container">
+              {tabBarExtraContent}
+              <Scroller 
+                direction={TabPosition === 'top' ? 'horizontal' : 'vertical'}
+                items={children}
+              />
+            </div>
+            <TabsContent 
               items={children}
-              changeActive={context.onTabClick}
             />
-            {renderContent()}
           </>
         }
       </TabsContext.Provider>

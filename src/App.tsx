@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Tabs from './components/Tabs/tabs';
-import TabsItem from './components/Tabs/tabsItem';
+import TabsItem from './components/Tabs/tabsContent';
 import Menu from './components/Menu/menu';
 import MenuItem from './components/Menu/menuItem';
 import SubMenu from './components/Menu/subMenu';

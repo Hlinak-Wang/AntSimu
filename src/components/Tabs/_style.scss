@@ -1,5 +1,5 @@
 .tabs-top, .tabs-bottom {
-  @include tabs-basic-style(0 3rem, none);
+  @include tabs-basic-style(0 3rem, none, row);
 
   &.tabs-inline {
     @include tabs-inline-style(inline-block, 0.5rem 0, 0 2rem 0 0);
@@ -79,7 +79,7 @@
 }
 
 .tabs-left, .tabs-right {
-  @include tabs-basic-style(2rem 0, left);
+  @include tabs-basic-style(2rem 0, left, column);
 
   &.tabs-inline {
     @include tabs-inline-style(block, 0.25rem 1rem, 0 0 1rem);

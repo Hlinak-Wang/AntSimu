@@ -1,29 +1,51 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
+import React, { useContext, useState, useRef, useCallback } from 'react';
 import classnames from 'classnames';
-import { TabsContext } from './tabs';
+import { TabsContext, TabsItemProps } from './tabs';
+import Scroll from './scroller';
 
-export type Ilabel = {
-  index: number;
-  label: React.ReactNode;
-  disabled: boolean;
-  closable: boolean;
+interface TabsLabelProps {
+  items: React.ReactNode;
 }
 
-export type ITabsLabel = {
-  labels: Ilabel[];
-  style?:React.CSSProperties;
-  onTabClick?: (selectIndex: number) => void;
-  rmTabs?: (targetIndex: number, e: React.MouseEvent<HTMLElement>) => void;
-}
+const TabsLabel:React.FC<TabsLabelProps> = ({ items }) => {
+  const [activeNode, setActiveNode] = useState();
 
-const TabsLabel:React.FC<ITabsLabel> = ({ labels, rmTabs }) => {
+  const context = useContext(TabsContext);
+
+  const ActiveCall = useCallback(node => {
+    if (node !== null) {
+      setActiveNode(node)
+    }
+  }, []);
 
   return (
-    <div className="show-container">
-      <ul className="tabs-label">
-        
-      </ul>
-    </div>
+    <Scroll>
+    {
+      React.Children.map(items, child => {
+        const childElement = child as React.FunctionComponentElement<TabsItemProps>;
+        const displayName = childElement.type.displayName || childElement.type.name;
+        if (displayName !== 'TabsItem') {
+          console.error("Tabs has a child which is not TabsItem component");
+          return childElement;
+        }
+
+        const cls = classnames('label-item', { 
+          active: context.activeKey === childElement.key,
+          disabled: childElement.props.disabled
+        }) 
+
+        return (
+          <div 
+            onClick={() => context.tabClickRes && context.tabClickRes(childElement.key as string)} 
+            ref={context.activeKey === childElement.key ? ActiveCall : null} 
+            className={cls}
+          >
+            {childElement.props.label}
+          </div>
+        )
+      })
+    }
+    </Scroll>
   )
 }
 

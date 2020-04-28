@@ -1,22 +1,43 @@
-import React, { useCallback, useState, useRef, useEffect } from 'react';
-import { TabsItemProps } from './tabsItem';
+import React, { useCallback, useState, useRef, useEffect, useContext } from 'react';
+import { TabsContext, TabsItemProps } from './tabs';
 import SliderBar from './sliderBar';
 import classnames from 'classnames';
 
 interface IScroller {
-  activeIndex: number | string;
   direction: 'vertical' | 'horizontal';
   items: React.ReactNode;
-  changeActive: (index: number) => void;
 }
 
-const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeActive }) => {
+function getDefaultActiveKey(children: React.ReactNode) {
+  let defaultActiveKey: string | undefined = undefined;
+
+  React.Children.forEach(children, child => {
+    const childElement = child as React.FunctionComponentElement<TabsItemProps>;
+    if (child && !childElement.props.disabled && defaultActiveKey === undefined) {
+      defaultActiveKey = childElement.key as string;
+    }
+  });
+
+  return defaultActiveKey;
+}
+
+const Scroller: React.FC<IScroller> = ({ direction, items }) => {
 
   const containRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [shiftX, setShiftX] = useState<number>(0);
   const [shiftY, setShiftY] = useState<number>(0);
   const [activeNode, setActiveNode] = useState();
+  const context = useContext(TabsContext);
+
+  useEffect(() => {
+    if (context.activeKey === undefined) {
+      const defaultActiveKey = getDefaultActiveKey(items);
+      if (defaultActiveKey !== undefined) {
+        context.tabClickRes && context.tabClickRes(defaultActiveKey);
+      }
+    }
+  }, [])
 
   const ActiveCall = useCallback(node => {
     if (node !== null) {
@@ -58,27 +79,28 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
   }, [shiftX, shiftY])
 
   const renderTabs = () => {
-    const Label = React.Children.map(items, (child, index) => {
+    const Label = React.Children.map(items, child => {
       const childElement = child as React.FunctionComponentElement<TabsItemProps>;
       const displayName = childElement.type.displayName || childElement.type.name;
-      if (displayName === 'TabsItem') {
-        const cls = classnames('label-item', { 
-          active: activeIndex === index,
-          disabled: childElement.props.disabled
-        }) 
-        
-        return (
-          <div 
-            onClick={() => changeActive(index)} 
-            ref={activeIndex === index ? ActiveCall : null} 
-            className={cls}
-          >
-            {childElement.props.label}
-          </div>
-        )
-      } else {
-        console.error("Tabs has a child which is not TabsItem component")
+      if (displayName !== 'TabsItem') {
+        console.error("Tabs has a child which is not TabsItem component");
+        return childElement;
       }
+
+      const cls = classnames('label-item', { 
+        active: context.activeKey === childElement.key,
+        disabled: childElement.props.disabled
+      }) 
+
+      return (
+        <div 
+          onClick={() => context.tabClickRes && context.tabClickRes(childElement.key as string)} 
+          ref={context.activeKey === childElement.key ? ActiveCall : null} 
+          className={cls}
+        >
+          {childElement.props.label}
+        </div>
+      )
     })
     return Label
   }
@@ -97,7 +119,7 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
         if (activeNode.clientHeight + activeNode.offsetTop + shiftY > containRef.current.clientHeight) {
           setShiftY(-activeNode.offsetTop);
         } else if (activeNode.offsetTop < -shiftY) {
-          setShiftY(-activeNode.offsetTop);
+          setShiftY(-activeNode.offsetTop); 
         }
       }
     }
@@ -193,7 +215,7 @@ const Scroller: React.FC<IScroller> = ({ activeIndex, direction, items, changeAc
   })
 
   return (
-    <div className="tabs-label-container">
+    <div className="scroll-container">
       <div onClick={prev} className={prevCls}>
         <div className="prev-button"/>
       </div>
