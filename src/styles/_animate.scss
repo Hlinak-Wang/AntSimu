@@ -23,3 +23,23 @@
   animation-fill-mode: both;
 }
 
+@keyframes show {
+  from {
+    transform: scaleY(0);
+    transform-origin: center top;
+    opacity: 0;
+  }
+
+  to {
+    transform: scaleY(1);
+    transform-origin: center top;
+    opacity: 1;
+  }
+}
+
+
+.tabs-content-active {
+  animation-duration: 0.3s;
+  animation-fill-mode: both;
+  animation-name: show;
+}
