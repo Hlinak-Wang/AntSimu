@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { FC, AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode, MouseEventHandler, useState } from 'react';
 import classnames from 'classnames';
 import omit from 'omit.js';
 
@@ -10,10 +10,13 @@ export type ButtonHTMLType = 'button' | 'submit' | 'reset';
 
 interface baseButtonProps {
   className ?: string;
+  /**设置Button是否为禁用 */
   disabled ?: boolean;
+  /**设置Button的尺寸 */
   size?: ButtonSize;
+  /**设置Button的类型 */
   type?: ButtonType;
-  children?: React.ReactNode;
+  children?: ReactNode;
   href?: string;
   danger?:boolean;
   HTMLType?: string;
@@ -22,20 +25,27 @@ interface baseButtonProps {
 
 export type NativeButtonProps = {
     HTMLType: ButtonHTMLType;
-    onClick?: React.MouseEventHandler<HTMLElement>
+    onClick?: MouseEventHandler<HTMLElement>
   }
   & baseButtonProps
-  & Omit<React.ButtonHTMLAttributes<HTMLElement>, 'type' | 'oncLick'>;
+  & Omit<ButtonHTMLAttributes<HTMLElement>, 'type' | 'oncLick'>;
  
 export type NativeAnchorProps = {
-  onClick?:React.MouseEventHandler<HTMLElement>
+  onClick?:MouseEventHandler<HTMLElement>
 }
 & baseButtonProps
-& Omit<React.AnchorHTMLAttributes<HTMLElement>, 'onClick'>;
+& Omit<AnchorHTMLAttributes<HTMLElement>, 'onClick'>;
 
 export type ButtonProps = Partial<NativeAnchorProps & NativeButtonProps>;
 
-const Button: React.FC<ButtonProps> = (props) => {
+/**
+ * 这是Button组件
+ * ## Button header
+ * ~~~js
+ * import Button from xxx
+ * ~~~
+ */
+export const Button: FC<ButtonProps> = (props) => {
   const { 
     className,
     type,
