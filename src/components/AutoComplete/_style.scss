@@ -1,0 +1,32 @@
+.input-autocomplete {
+  position: relative;
+}
+
+.suggestion-list {
+  position: absolute;
+  width: 100%;
+  box-shadow: 0 0 6px 1px $gray-7;
+  font-weight: 300; 
+  background: $white;
+  top: 50px;
+  list-style: none;
+  padding: 0;
+  z-index: 2;
+}
+
+.suggestion-item {
+  padding: 5px 10px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.hightLighted {
+  background: $gray-3;
+  color: $black
+}
+
+.same-suggestion {
+  background: lighten($primary, 30%);
+  font-weight: 600;
+  color: $black
+}
