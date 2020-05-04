@@ -1,7 +1,8 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { FC, createContext, useState, useEffect } from 'react';
 import classnames from 'classnames';
 import Scroller from './scroller';
 import TabsContent from './tabsContent'
+import TabsLabel from './tabsLabel';
 
 type TabsType = 'inline' | 'card';
 type TabsSize = 'small' | 'default' | 'large';
@@ -43,7 +44,7 @@ export class TabsItem extends React.Component<TabsItemProps>{}
 
 export const TabsContext = createContext<ITabsContext>({});
 
-const Tabs: React.FC<TabsProps> = (props) => {
+const Tabs: FC<TabsProps> = (props) => {
   
   const { 
     type, 
@@ -105,16 +106,14 @@ const Tabs: React.FC<TabsProps> = (props) => {
     <div className={itemClass} style={style}>
       <TabsContext.Provider value={context}>
         {
-          TabPosition === 'bottom' 
+          TabPosition === 'bottom' || TabPosition === 'right'
           ? <>
-            
             <TabsContent 
               items={children}
             />
             <div className="tabs-labels-container">
               {tabBarExtraContent}
-              <Scroller 
-                direction={TabPosition === 'bottom' || TabPosition === 'top' ? 'horizontal' : 'vertical'} 
+              <TabsLabel 
                 items={children}
               />
             </div>
@@ -123,8 +122,7 @@ const Tabs: React.FC<TabsProps> = (props) => {
           : <>
             <div className="tabs-labels-container">
               {tabBarExtraContent}
-              <Scroller 
-                direction={TabPosition === 'top' ? 'horizontal' : 'vertical'}
+              <TabsLabel 
                 items={children}
               />
             </div>

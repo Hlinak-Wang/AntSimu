@@ -1,49 +1,20 @@
-import React, { useCallback, useState, useRef, useEffect, useContext } from 'react';
-import { TabsContext, TabsItemProps } from './tabs';
+import React, { FC, useCallback, useState, useRef, useEffect } from 'react';
 import SliderBar from './sliderBar';
 import classnames from 'classnames';
 
 interface IScroller {
   direction: 'vertical' | 'horizontal';
-  items: React.ReactNode;
+  activeRef: any;
+  prevButton?: React.ReactNode;
+  nextButton?: React.ReactNode;
 }
 
-function getDefaultActiveKey(children: React.ReactNode) {
-  let defaultActiveKey: string | undefined = undefined;
-
-  React.Children.forEach(children, child => {
-    const childElement = child as React.FunctionComponentElement<TabsItemProps>;
-    if (child && !childElement.props.disabled && defaultActiveKey === undefined) {
-      defaultActiveKey = childElement.key as string;
-    }
-  });
-
-  return defaultActiveKey;
-}
-
-const Scroller: React.FC<IScroller> = ({ direction, items }) => {
+const Scroller: React.FC<IScroller> = ({ direction, activeRef, children }) => {
 
   const containRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [shiftX, setShiftX] = useState<number>(0);
   const [shiftY, setShiftY] = useState<number>(0);
-  const [activeNode, setActiveNode] = useState();
-  const context = useContext(TabsContext);
-
-  useEffect(() => {
-    if (context.activeKey === undefined) {
-      const defaultActiveKey = getDefaultActiveKey(items);
-      if (defaultActiveKey !== undefined) {
-        context.tabClickRes && context.tabClickRes(defaultActiveKey);
-      }
-    }
-  }, [])
-
-  const ActiveCall = useCallback(node => {
-    if (node !== null) {
-      setActiveNode(node)
-    }
-  }, []);
 
   const scrollEventCallback = useCallback((e: WheelEvent) => {
     handleScroll(e)
@@ -78,52 +49,26 @@ const Scroller: React.FC<IScroller> = ({ direction, items }) => {
     }
   }, [shiftX, shiftY])
 
-  const renderTabs = () => {
-    const Label = React.Children.map(items, child => {
-      const childElement = child as React.FunctionComponentElement<TabsItemProps>;
-      const displayName = childElement.type.displayName || childElement.type.name;
-      if (displayName !== 'TabsItem') {
-        console.error("Tabs has a child which is not TabsItem component");
-        return childElement;
-      }
-
-      const cls = classnames('label-item', { 
-        active: context.activeKey === childElement.key,
-        disabled: childElement.props.disabled
-      }) 
-
-      return (
-        <div 
-          onClick={() => context.tabClickRes && context.tabClickRes(childElement.key as string)} 
-          ref={context.activeKey === childElement.key ? ActiveCall : null} 
-          className={cls}
-        >
-          {childElement.props.label}
-        </div>
-      )
-    })
-    return Label
-  }
 
   useEffect(() => {
 
-    if (activeNode && scrollRef.current && containRef.current) {
+    if (activeRef && scrollRef.current && containRef.current) {
       if (direction === 'horizontal') {
-        if (activeNode.clientWidth + activeNode.offsetLeft + shiftX > containRef.current.clientWidth) {
-          setShiftX(-activeNode.offsetLeft);
-        } else if (activeNode.offsetLeft < -shiftX) {
-          setShiftX(-activeNode.offsetLeft);
+        if (activeRef.clientWidth + activeRef.offsetLeft + shiftX > containRef.current.clientWidth) {
+          setShiftX(-activeRef.offsetLeft);
+        } else if (activeRef.offsetLeft < -shiftX) {
+          setShiftX(-activeRef.offsetLeft);
         }
       } else if (direction === 'vertical') {
 
-        if (activeNode.clientHeight + activeNode.offsetTop + shiftY > containRef.current.clientHeight) {
-          setShiftY(-activeNode.offsetTop);
-        } else if (activeNode.offsetTop < -shiftY) {
-          setShiftY(-activeNode.offsetTop); 
+        if (activeRef.clientHeight + activeRef.offsetTop + shiftY > containRef.current.clientHeight) {
+          setShiftY(-activeRef.offsetTop);
+        } else if (activeRef.offsetTop < -shiftY) {
+          setShiftY(-activeRef.offsetTop); 
         }
       }
     }
-  }, [activeNode]);
+  }, [activeRef]);
 
   function prevAbleStatus() {
     if (shiftX || shiftY) {
@@ -222,11 +167,10 @@ const Scroller: React.FC<IScroller> = ({ direction, items }) => {
       <div onClick={next} className={nextCls}>
         <div className="next-button"/>
       </div>
-
       <div className="show-container" ref={containRef}>
         <div className="tabs-label" ref={scrollRef} style={{transform: `translate3d(${shiftX}px,${shiftY}px,0px)`}}>
-          {renderTabs()}
-          <SliderBar activeRef={activeNode} direction={direction}/>
+          {children}
+          <SliderBar activeRef={activeRef} direction={direction}/>
         </div>
       </div>
     </div>

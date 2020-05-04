@@ -1,12 +1,13 @@
 import React from 'react';
 import Tabs, {TabsItem} from './tabs';
 import { storiesOf } from '@storybook/react';
+import { withInfo } from '@storybook/addon-info';
 import { actions } from '@storybook/addon-actions';
 import Button from '../Button/button';
 
 const arr = (props: Object) => (
   <Tabs {...props}>
-  <TabsItem label="1" key="1" disabled>
+  <TabsItem label="1" key="1">
     label 1
   </TabsItem>
   <TabsItem label="2" key="2" disabled>
@@ -33,7 +34,7 @@ const arr = (props: Object) => (
   <TabsItem label="7" key="9">
     label 7
   </TabsItem>
-  <TabsItem label="6" key="10">
+{/*   <TabsItem label="6" key="10">
     label 6
   </TabsItem>
   <TabsItem label="7" key="11">
@@ -110,7 +111,7 @@ const arr = (props: Object) => (
   </TabsItem>
   <TabsItem label="7" key="35">
     label 7
-  </TabsItem>
+  </TabsItem> */}
   </Tabs>
 );
   
@@ -118,7 +119,7 @@ const button = <><Button>tesa</Button></>;
 
 storiesOf('Tabs', module)
   .add('基础样式', () => (
-    arr({TabPosition: "top", defaultActiveKey: "10", tabBarExtraContent:button})
+    arr({TabPosition: "top", tabBarExtraContent:button})
   ))
   .add('可设置方向', () => (
     arr({TabPosition: "bottom", tabBarExtraContent:button})

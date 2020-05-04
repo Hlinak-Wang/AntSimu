@@ -3,6 +3,7 @@
   $content-float,
   $flex-direction
 ) {
+  display: flex;
   .tabs-labels-container {
     display: flex;
     flex-wrap: wrap;
@@ -22,8 +23,11 @@
 
   .tabs-content-container {
     height: 100%;
+    width: 100%;
     display: block;
+    position: relative;
     float: $content-float;
+    overflow: auto;
   }
 
   .show-container {
@@ -49,6 +53,7 @@
     &.tabs-btn-diabled {
       cursor: not-allowed;
       .prev-button, .next-button {
+        
         &::before {
           background: $gray-5;
           transform: rotate(-45deg);

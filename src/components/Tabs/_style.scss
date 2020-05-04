@@ -1,6 +1,6 @@
 .tabs-top, .tabs-bottom {
   @include tabs-basic-style(0 3rem, none, row);
-
+  flex-direction: column;
   &.tabs-inline {
     @include tabs-inline-style(inline-block, 0.5rem 0, 0 2rem 0 0);
   }
@@ -201,10 +201,12 @@
 
 .tabs-content {
   display: none;
-  &.active {
+  &.tabs-content-active {
     display: block;
+    overflow: auto;
   }
 }
+
 
 .tabs-close-btn {
   color: $gray-7;

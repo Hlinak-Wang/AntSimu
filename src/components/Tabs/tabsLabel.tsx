@@ -1,14 +1,36 @@
-import React, { useContext, useState, useRef, useCallback } from 'react';
+import React, { FC, FunctionComponentElement, ReactNode, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import classnames from 'classnames';
 import { TabsContext, TabsItemProps } from './tabs';
 import Scroll from './scroller';
 
 interface TabsLabelProps {
-  items: React.ReactNode;
+  items: ReactNode;
 }
 
-const TabsLabel:React.FC<TabsLabelProps> = ({ items }) => {
+function getDefaultActiveKey(children: ReactNode) {
+  let defaultActiveKey: string | undefined = undefined;
+
+  React.Children.forEach(children, child => {
+    const childElement = child as FunctionComponentElement<TabsItemProps>;
+    if (child && !childElement.props.disabled && defaultActiveKey === undefined) {
+      defaultActiveKey = childElement.key as string;
+    }
+  });
+
+  return defaultActiveKey;
+}
+
+const TabsLabel:FC<TabsLabelProps> = ({ items }) => {
   const [activeNode, setActiveNode] = useState();
+
+  useEffect(() => {
+    if (context.activeKey === undefined) {
+      const defaultActiveKey = getDefaultActiveKey(items);
+      if (defaultActiveKey !== undefined) {
+        context.tabClickRes && context.tabClickRes(defaultActiveKey);
+      }
+    }
+  }, [])
 
   const context = useContext(TabsContext);
 
@@ -19,7 +41,10 @@ const TabsLabel:React.FC<TabsLabelProps> = ({ items }) => {
   }, []);
 
   return (
-    <Scroll>
+    <Scroll
+      direction={context.TabPosition === 'bottom' || context.TabPosition === 'top' ? 'horizontal' : 'vertical'} 
+      activeRef={activeNode}
+    >
     {
       React.Children.map(items, child => {
         const childElement = child as React.FunctionComponentElement<TabsItemProps>;
