@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Input from './input';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
 const Control = () => {
   const [value, setValue] = useState("");
+  const testRef = useRef<HTMLInputElement | null>(null)
+  useEffect(() => {
+    console.log(testRef.current!.width);
+  }, [testRef])
   return (
-    <Input value={value} onChange={e => {setValue(e.target.value)}} />
+    <Input value={value} onChange={e => {setValue(e.target.value)}} ref={testRef}/>
   )
 }
 

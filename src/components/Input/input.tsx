@@ -1,4 +1,4 @@
-import React, { FC, InputHTMLAttributes, ReactElement, ChangeEvent } from 'react';
+import React, { FC, InputHTMLAttributes, ReactElement, ChangeEvent, forwardRef, useImperativeHandle, useRef } from 'react';
 import classnames from 'classnames';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
@@ -12,9 +12,31 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
-export const Input: FC<InputProps> = (props) => {
+export interface RefInput {
+  focus: () => void;
+  blur: () => void;
+  width: number;
+  height: number;
+  offsetTop: number;
+  offsetLeft: number;
+}
+export const Input= forwardRef<RefInput, InputProps>((props,ref) => {
 
   const { size, inputPrefix, inputSuffix, ...restProps } = props;
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current!.focus();
+    },
+    blur: () => {
+      inputRef.current!.blur();
+    },
+    width: inputRef.current!.clientWidth,
+    height: inputRef.current!.clientHeight,
+    offsetTop: inputRef.current!.offsetTop,
+    offsetLeft: inputRef.current!.offsetLeft
+  }));
 
   if ('value' in props) {
     delete restProps.defaultValue;
@@ -39,11 +61,11 @@ export const Input: FC<InputProps> = (props) => {
       [`input-${size}`]: size,
     })
     return (
-      <input className={cls} {...restProps} />
+      <input className={cls} {...restProps} ref={inputRef}/>
     )
   }
   
-}
+})
 
 Input.defaultProps = {
   size: 'mid',
