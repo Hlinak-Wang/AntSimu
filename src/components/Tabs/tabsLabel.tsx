@@ -22,6 +22,7 @@ function getDefaultActiveKey(children: ReactNode) {
 
 const TabsLabel:FC<TabsLabelProps> = ({ items }) => {
   const [activeNode, setActiveNode] = useState();
+  const context = useContext(TabsContext);
 
   useEffect(() => {
     if (context.activeKey === undefined) {
@@ -31,8 +32,6 @@ const TabsLabel:FC<TabsLabelProps> = ({ items }) => {
       }
     }
   }, [])
-
-  const context = useContext(TabsContext);
 
   const ActiveCall = useCallback(node => {
     if (node !== null) {
