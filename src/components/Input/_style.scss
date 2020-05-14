@@ -7,9 +7,9 @@
   z-index: 10;
   box-sizing: border-box;
   text-align: inherit;
-  box-sizing: border-box;
+  outline: none;
   &:focus {
-    border: 1px solid rgba($primary, 0.5);
+    border: 1px solid $primary;
     box-shadow: 0 0 5px 1px rgba($primary, 0.5);
   }
   &[disabled] {
@@ -22,21 +22,20 @@
   }
 }
 
-.input-group {
+.input-addon-wrapper {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  width: 100%;
   color: rgba(0,0,0,.65);
   line-height: 1.5715;
   list-style: none;
-  -webkit-font-feature-settings: 'tnum';
   font-feature-settings: 'tnum';
   position: relative;
-  display: table;
+  display: flex;
   border-collapse: separate;
   border-spacing: 0;
-  .input-prefix {
-    display: table-cell;
+  .input-addBefore {
     border-radius: 2px;
     box-sizing: border-box;
     border-top-right-radius: 0;
@@ -46,9 +45,10 @@
     border-right-width: 0px;
     background: $gray-3;
     vertical-align: middle;
+    text-align: center;
   }
-  .input-suffix {
-    display: table-cell;
+  .input-addAfter {
+    text-align: center;
     border-radius: 2px;
     box-sizing: border-box;
     border-top-left-radius: 0;
@@ -59,11 +59,73 @@
     background: $gray-3;
     vertical-align: middle;
   }
-  .input {
+  .input-inner-wrapper {
     border-collapse:separate;
-    display: table-cell;
-    border-radius: 0px;
+    display: flex;
+    position: relative;
+    border: 1px solid $gray-5;
+    z-index: 5;
+    flex: 1;
+
+    &.with-add-before {
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+    }
+
+    &.with-add-after {
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
+    .input {
+      border: 0px solid transparent;
+      border-radius: 0px;
+      
+      &:focus {
+        border: 0px solid transparent;
+        box-shadow: 0 0 5px 1px transparent;
+      }
+    }
+    &.inner-wrapper-focus {
+      border: 1px solid $primary;
+      box-shadow: 0 0 5px 1px rgba($primary, 0.5);
+    }
   }
+
+
+}
+
+.input-inner-wrapper {
+  border-collapse:separate;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  position: relative;
+  border-radius: 2px;
+  border: 1px solid $gray-5;
+  z-index: 5;
+  padding: 0.25rem 0.5rem;
+  .input {
+    border: 0px solid transparent;
+    padding: 0 6px;
+    border-radius: 0px;
+    flex: 1;
+    &:focus {
+      border: 0px solid transparent;
+      box-shadow: 0 0 5px 1px transparent;
+    }
+  }
+  &.inner-wrapper-focus {
+    border: 1px solid $primary;
+    box-shadow: 0 0 5px 1px rgba($primary, 0.5);
+  }
+}
+
+.input-prefix {
+  margin-right: 5px;
+}
+
+.input-suffix {
+  margin-left: 5px;
 }
 
 .input-sm {
