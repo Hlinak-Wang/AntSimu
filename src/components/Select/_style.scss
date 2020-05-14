@@ -1,0 +1,155 @@
+.select {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.select-input {
+  $height: 100%;
+  cursor: pointer;
+}
+
+.select-option-container {
+  background: $white;
+  box-shadow: 0 0 1px 2px $gray-5;
+  position: absolute;
+  margin-top: 6px;
+  z-index: 2;
+  width: 100%;
+  $height: 50px;
+  overflow-y: scroll;
+  overflow-anchor: none;
+}
+
+.select-option {
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  transition: background 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms, font-weight 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms;
+  &.select-option-active {
+    background: lighten($primary, 30%);
+    font-weight: 600;
+  }
+}
+
+.select-tag {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: 5px;
+  margin-bottom: 2px;
+  margin-top: 2px;
+}
+
+.select-tag-animate-group {
+  flex: 1;
+}
+
+.test {
+  position: relative;
+  float: right;
+  width: 30px;
+  height: 100%;
+  &::before {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    width: 8px;
+    height: 2px;
+    border-radius: 1px;
+  }
+
+  &::after {
+    content: "";
+    display: inline-block;
+    margin-left: -1px;
+    vertical-align: middle;
+    width: 15px;
+    height: 2px;
+    border-radius: 1px;
+  }
+}
+
+.test-animate-enter {
+  &::before {
+    background: $primary;
+    transform: rotate(45deg) scaleX(0);
+  }
+  
+  &::after {
+    background: $primary;
+    transform: rotate(-45deg) scaleX(0);
+  }
+}
+
+.test-animate-enter-active {
+  &::before {
+    background: $primary;
+    transform: rotate(45deg) scaleX(1);
+    transform-origin: right;
+    transition: transform 0.3s ease-in;
+  }
+
+  &::after {
+    background: $primary;
+    transform: rotate(-45deg) scaleX(1);
+    transform-origin: left;
+    transition: transform 0.3s ease-in;
+  }
+}
+
+.test-animate-enter-done {
+  &::before {
+    background: $primary;
+    transform: rotate(45deg);
+    transform-origin: right;
+  }
+
+  &::after {
+    background: $primary;
+    transform: rotate(-45deg);
+    transform-origin: left;
+  }
+}
+
+.test-animate-exit {
+  &::before {
+    background: $primary;
+    transform: rotate(45deg);
+    transform-origin: right;
+  }
+
+  &::after {
+    background: $primary;
+    transform: rotate(-45deg);
+    transform-origin: left;
+  }
+}
+
+.test-animate-exit-active {
+  &::before {
+    background: $primary;
+    transform: rotate(45deg) scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease-in;
+  }
+
+  &::after {
+    background: $primary;
+    transform: rotate(-45deg) scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease-in;
+  }
+}
+
+.test-animate-exit-done {
+  &::before {
+    background: $primary;
+    transform: rotate(45deg) scaleX(0);
+    transform-origin: right;
+  }
+
+  &::after {
+    background: $primary;
+    transform: rotate(-45deg) scaleX(0);
+    transform-origin: left;
+  }
+}

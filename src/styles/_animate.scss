@@ -43,3 +43,52 @@
   animation-fill-mode: both;
   animation-name: show;
 }
+
+.test-top-enter {
+  opacity: 0;
+  transform: scaleY(0);
+}
+
+.test-top-enter-active {
+  opacity: 1;
+  transform: scaleY(1);
+  transform-origin: center top;
+  transition: transform 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms, opacity 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms;
+}
+
+.test-top-exit {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.test-top-exit-active {
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: center top;
+  transition: transform 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms, opacity 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms;
+}
+
+.select-tag-animate-enter {
+  transform: scale(0);
+  opacity: 0;
+}
+
+.select-tag-animate-enter-active {
+  transform: scale(1);
+  transform-origin: center center;
+  opacity: 1;
+  transition: transform 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms, opacity 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms;
+}
+
+.select-tag-animate-exit {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.select-tag-animate-exit-active {
+  transform: scale(0);
+  transform-origin: center center;
+  opacity: 0;
+  transition: transform 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms, opacity 300ms cubic-bezier(0.23, 1, 0.33, 1) 100ms;
+
+}

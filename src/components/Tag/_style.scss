@@ -1,0 +1,85 @@
+.hlinak-tag {
+  border: 1px solid;
+  font-size: 12px;
+  border-radius: 2px;
+  padding: 0 0.5rem;
+  height: auto;
+  line-height: 20px;
+  cursor: default;
+  display: inline-block;
+} 
+
+.hlinak-tag-close-btn {
+  
+  position: relative;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-left: 5px;
+  cursor: pointer;
+
+  &::before {
+    position: absolute;
+    content: '';
+    background: $white;
+    width: 10px;
+    top: 5px;
+    height: 1px;
+    border-radius: 0.5px;
+    transform: rotate(45deg);
+  }
+  &::after {
+    position: absolute;
+    content: '';
+    background: $white;
+    width: 10px;
+    height: 1px;
+    top:5px;
+    border-radius: 0.5px;
+    transform: rotate(-45deg);
+  }
+
+  &:hover {
+    &::before {
+      background: $black;
+    }
+
+    &::after {
+      background: $black;
+    }
+  }
+}
+
+.hlinak-tag-success {
+  color: $green;
+  background:lighten($green, 50%);
+  border-color: lighten($green, 20%);
+}
+
+.hlinak-tag-warning {
+  color: $orange;
+  background:lighten($orange, 45%);
+  border-color: lighten($orange, 20%);
+}
+
+.hlinak-tag-info {
+  color: $blue;
+  background:lighten($blue, 40%);
+  border-color: lighten($blue, 20%);
+}
+
+.hlinak-tag-error {
+  color: $red;
+  background:lighten($red, 45%);
+  border-color: lighten($red, 20%);
+}
+
+.hlinak-tag-default {
+  color: $gray-8;
+  background: lighten($gray-8, 65%);
+  border-color: lighten($gray-8, 20%);
+}
+
+.hlinak-tag-hidden {
+  display: none;
+}
