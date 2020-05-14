@@ -29,7 +29,6 @@ const netAuto = () => {
     return fetch(`https://api.github.com/search/users?q=${keyword}`)
     .then(res => res.json())
     .then(({ items }) => {
-      console.log(items)
       return items.slice(0, 10).map(item => ({value: item.login, ...item}))
     })
   } 

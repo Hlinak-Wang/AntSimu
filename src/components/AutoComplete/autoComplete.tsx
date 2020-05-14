@@ -1,4 +1,5 @@
-import React, { FC, KeyboardEvent, useState, ReactElement, useEffect, useRef, Ref } from 'react';
+import React, { FC, KeyboardEvent, useState, ReactElement, useEffect, useRef } from 'react';
+import Animate from '../Animate/animate';
 import classnames from 'classnames';
 import useDebounce from '../../hooks/useDebounce';
 import Input, { InputProps } from '../Input/input';
@@ -13,7 +14,7 @@ export interface IAutoComplete extends Omit<InputProps, 'onSelect'> {
 }
 
 
-export const AutoComplete= (props: IAutoComplete) => {
+export const AutoComplete:FC<IAutoComplete> = (props) => {
   const {
     fetchSuggestion,
     onSelect,
@@ -27,32 +28,52 @@ export const AutoComplete= (props: IAutoComplete) => {
   const [suggestions, setSuggestion] = useState<OptionType[]>([]);
   const [loading, setLoading] = useState(false);
   const [hightLight, setHightLight] = useState(-1);
-  const debounceValue = useDebounce(inputValue, 500);
+  const [suggestionOpen, setSuggestionOpen] = useState(false);
+  const [inputActive, setInputActive] = useState(false);
+  const debounceValue = useDebounce(inputValue, 200);
   const componentRef = useRef<HTMLDivElement | null>(null);
-  const triggerSearch = useRef(true);
-  useClickOutSide(componentRef, () => {setSuggestion([])})
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  useClickOutSide(componentRef, () => {setSuggestionOpen(false)})
 
   useEffect(() => {
-    if (debounceValue && triggerSearch.current) {
+    // 当Input.value有值时
+    if (debounceValue) {
+      console.log("refresh")
       const results = fetchSuggestion(debounceValue);
       if (results instanceof Promise) {
         setLoading(true);
+        setSuggestionOpen(true);
         results.then(data => {
-          setLoading(false)
-          setSuggestion(data)
+          
+          if (data.length === 0) {
+            setSuggestionOpen(false);
+            console.log("hello zero")
+          } else {
+            setLoading(false)
+            setSuggestion(data);
+          }
+
+        }).catch(err => {
+          console.log(err)
         })
       } else {
-        setSuggestion(results);
+        if (results.length === 0) {
+          setSuggestionOpen(false)
+          console.log(suggestions)
+        } else {
+          setSuggestion(results);
+          setSuggestionOpen(true);
+        }
       }
-    } else { 
-      setSuggestion([])
+    } 
+    // 当Input.value没值时
+    else { 
+      setSuggestionOpen(false);
     }
-  }, [debounceValue]);
+  }, [debounceValue, inputActive]);
 
   const handleSelect = (item: OptionType) => {
     setInputValue(item.value);
-    setSuggestion([]);
-    triggerSearch.current = false;
     onSelect && onSelect(item)
   }
 
@@ -74,9 +95,7 @@ export const AutoComplete= (props: IAutoComplete) => {
     switch (e.keyCode) {
       case 13:  // enter
         setInputValue(suggestions[hightLight].value);
-        setSuggestion([]);
         setHightLight(-1);
-        triggerSearch.current = false;
         break;
       case 38:  // up
         handleHightLight(hightLight - 1);
@@ -85,7 +104,6 @@ export const AutoComplete= (props: IAutoComplete) => {
         handleHightLight(hightLight + 1);
         break;
       case 27:  //esc
-        setSuggestion([])
         setHightLight(-1);
         break;
       default:
@@ -94,12 +112,18 @@ export const AutoComplete= (props: IAutoComplete) => {
   }
 
   const generateDropDown = () => {
-    const width = 100;
+    const offsetTop = componentRef.current && componentRef.current.clientHeight + 6;
     return (
-      <ul className="suggestion-list">
-        {loading && <li>loading</li>}
-        {
-          suggestions.map((suggestion, index) => {
+      <Animate
+        in={inputActive && suggestionOpen}
+        timeout={300}
+        classNames={`test-top`}
+        unmountOnExit
+      >
+        <ul className="suggestion-list" style={{top: `${offsetTop}px`}}>
+          {loading 
+          ? <li><h1>loading</h1></li>
+          : suggestions.map((suggestion, index) => {
             const cls = classnames('suggestion-item', {
               'hightLighted': index === hightLight,
               'same-suggestion': suggestion.value === inputValue
@@ -110,14 +134,36 @@ export const AutoComplete= (props: IAutoComplete) => {
               </li>
             )
           })
-        } 
-      </ul>
+          }
+        </ul>
+      </Animate>
     )
+  }
+
+  const handleFocus = () => {
+    console.log("onfocus", inputActive, suggestionOpen)
+    setInputActive(true);
+    console.log("set true")
+  }
+
+  const handleBlur = () => {
+
+    console.log("onblur", inputActive, suggestionOpen)
+    setInputActive(false);
+    console.log("set false")
   }
   return (
     <div className="input-autocomplete" ref={componentRef}>
-      <Input value={inputValue} onChange={e => {setInputValue(e.target.value); triggerSearch.current = true;}} onKeyDown={handleKeyboard} {...restProps} />
-      {suggestions.length > 0 && generateDropDown()} 
+      <Input 
+        ref={inputRef} 
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        value={inputValue} onChange={e => {setInputValue(e.target.value)}} 
+        onKeyDown={handleKeyboard} 
+        {...restProps} 
+      />
+      
+      {generateDropDown()} 
     </div>
   )
 }
