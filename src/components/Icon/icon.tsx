@@ -1,22 +1,24 @@
 import React from 'react';
 import classnames from 'classnames';
-import { FontAwesomeIcon, FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
 
-export type ThemeProps = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger' | 'light' | 'dark';
-
-export interface IconProps extends FontAwesomeIconProps {
-  theme?: ThemeProps
+export interface IconProps {
+  shape: 'arrow',
+  status: 'left' | 'right' | 'not-allow',
+  className?: string
 }
 
 const Icon: React.FC<IconProps> = (props) => {
 
   // icon primary
-  const { className, theme, ...resetProps } = props
+  const { shape, status, className} = props
   const cls = classnames(className, {
-    [`icon-${theme}`]: theme
+    [`icon-${shape}`]: 1,
+    [`icon-${status}`]: 1
   })
   return (
-    <FontAwesomeIcon className={cls} {...resetProps}/>
+
+    <span className={cls} />
+
   )
 }
 

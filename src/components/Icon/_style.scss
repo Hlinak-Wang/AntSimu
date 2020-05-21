@@ -1,6 +1,44 @@
-
-@each $key, $value in $theme-colors {
-  .icon-#{$key} {
-    color: $value;
+.icon-arrow {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-left: 5px;
+  &::before, &::after {
+    content: "";
+    display: block;
+    margin: 0 auto;
+    width: 1.5px;
+    height: 7px;
+    background: black;
+    transition: transform .3s cubic-bezier(.645,.045,.355,1)
   }
+
+  &.icon-left {
+    &::before {
+      margin-bottom: -1px;
+      transform: rotate(45deg);
+      transform-origin: bottom;
+    }
+
+    &::after {
+      margin-top: -1px;
+      transform: rotate(-45deg);
+      transform-origin: top;
+    }
+  }
+
+  &.icon-right {
+    &::before {
+      margin-bottom: -1px;
+      transform: rotate(-45deg);
+      transform-origin: bottom;
+    } 
+  
+    &::after {
+      margin-top: -1px;
+      transform: rotate(45deg);
+      transform-origin: top;
+    }
+  }
+  
 }
