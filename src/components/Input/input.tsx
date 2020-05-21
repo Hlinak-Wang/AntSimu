@@ -30,9 +30,7 @@ export const Input= forwardRef<RefInput, InputProps>((props,ref) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useImperativeHandle(ref, () => ({
-    focus: () => {
-      inputRef.current!.focus();
-    },
+    focus: () => inputRef.current!.focus(),
     blur: () => {
       inputRef.current!.blur();
     },

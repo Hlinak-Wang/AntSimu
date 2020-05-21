@@ -1,12 +1,13 @@
 import React, { FC, useState, useEffect, useRef, createContext, MouseEvent, CSSProperties, ReactNode } from 'react';
-import { CSSTransition, TransitionGroup, SwitchTransition } from 'react-transition-group';
-import QueueAnim from 'rc-queue-anim';
+import { CSSTransition } from 'react-transition-group';
 import { TweenOneGroup } from 'rc-tween-one';
+import { IAnimObject } from 'rc-tween-one/typings/AnimObject'
 import { OptionProps } from './option';
 import classnames from 'classnames';
 import useClickOutSide from '../../hooks/useClickOutSide';
 import Input from '../Input/input';
 import Tag from '../Tag/tag';
+import Icon from '../Icon/icon';
 
 export interface SelectProps {
   defaultValue?: string[];
@@ -52,7 +53,10 @@ const useTag = (defaultTag: string[] | undefined, maxTagCount?: number, mutiple:
           return [...v]
         });
       } else {
-        setSelect(v => [...v, tag]);
+        setSelect(v => {
+          v.unshift(tag);
+          return [...v]
+        });
       }
     } else {
       setSelect([tag])
@@ -113,10 +117,6 @@ export const Select: FC<SelectProps> = (props) => {
   }
 
   useEffect(() => {
-    console.log(tagHide)
-  }, [tagHide])
-
-  useEffect(() => {
     React.Children.forEach(children, (child, index) => {
       const childElement = child as React.FunctionComponentElement<OptionProps>;
       const displayName = childElement.type.displayName || childElement.type.name;
@@ -125,6 +125,30 @@ export const Select: FC<SelectProps> = (props) => {
       }
     })
   }, [children]);
+
+  const enterAnim: IAnimObject[] = [
+    {
+      opacity: 0, scale: 0,  duration: 0,
+    },
+    {
+      width: 0,
+      duration: 300,
+      type: "from",
+      
+      paddingLeft: 0,
+      paddingRight: 0,
+      margin: 0,
+      ease: 'easeOutQuad',
+    },
+    {
+      opacity: 1, scale: 1, duration: 250, ease: 'easeOutQuad',
+    }
+  ];
+  
+  const leaveAnim: IAnimObject[] = [
+    { duration: 250, opacity: 0, scale: 0 },
+    { width: 0,  paddingLeft: 0, paddingRight: 0, margin: 0,duration: 250, ease: 'easeOutQuad' },
+  ];
 
   const renderPullOut = () => {
     const dropDownCls = classnames(dropDonwClass, "select-option-container");
@@ -147,13 +171,12 @@ export const Select: FC<SelectProps> = (props) => {
 
   const renderTags = () => {
     return (
-      <QueueAnim 
-        delay={100} 
-        leaveReverse
-        className="queue-simple" 
-        animConfig={[
-          { opacity: [1, 0], scale: [1, 0] }
-        ]}
+      <TweenOneGroup
+        className="select-tag-group"
+        enter={enterAnim}
+        leave={leaveAnim}
+        appear={false}
+        exclusive
       >
         {
           tagShow.map(item => {
@@ -192,14 +215,14 @@ export const Select: FC<SelectProps> = (props) => {
           tagHide.length
           ? 
             <Tag className="select-tag" onClick={() => setShowStatus(v => !v)} key="tag-hide">
-              +{tagHide.length}...
               {
-                showStatus ? <span className="arrow-left" /> : <span className="arrow-right" />
+                showStatus ? 'hide': `+${tagHide.length}...`
               }
+              <Icon shape="arrow" status={showStatus ? 'left': 'right'} />
             </Tag>
           : null
         }
-      </QueueAnim>
+      </TweenOneGroup>
     )
   } 
 
