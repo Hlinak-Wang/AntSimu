@@ -1,0 +1,34 @@
+.hlinak-progress-wrapper {
+  width: 100%;
+  display: block;
+}
+
+.hlinak-progress-outer-bar {
+  position: relative;
+  background: $gray-5;
+  border-radius: 999px;
+  width: 100%;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+$inner-bar-color: ('onProgress': $primary, 'progressFinish': $green, 'progressFail': $red);
+.hlinak-progress-inner-bar {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 10px;
+  color: $white;
+  transition: width 0.4s cubic-bezier(.08,.82,.17,1) 0s;
+
+  @each $key, $value in $inner-bar-color {
+    &.hlinak-progress-#{$key} {
+      background: $value;
+    }
+  }
+}
+

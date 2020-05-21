@@ -1,0 +1,88 @@
+$upload-file-status: (
+  'success': $green,
+  'onload': $primary,
+  'error': $red,
+);
+
+.upload-file-group {
+  padding: 0;
+  margin: 0;
+}
+
+.upload-file {
+  list-style: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 2px;
+  transition: background 0.3s ease-in-out;
+  position: relative;
+
+  .upload-file-icon {
+    margin-right: 5px;
+  }
+
+  .upload-file-action {
+    text-align: center;
+    line-height: inherit;
+    color: $gray-7;
+    display: none;
+    width: 1rem;
+    height: 1rem;
+    float: right;
+    cursor: pointer;
+    &:hover {
+      color: $black;
+    }
+  }
+
+  .upload-file-status {
+    text-align: center;
+    float: right;
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+    line-height: inherit;
+  }
+
+  @each $key, $value in $upload-file-status {
+    &.upload-file-#{$key} {
+      @if $key == 'error' {
+        color: $value;
+      } @else {
+        .upload-file-status {
+          color: $value;
+        }
+      }
+    }
+  }
+
+  &:hover {
+    background: $gray-3;
+    .upload-file-action {
+      display: block;
+    }
+    .upload-file-status {
+      display: none;
+    }
+  }
+}
+
+.hlinak-upload-dragger-container {
+  
+  width: 250px;
+  height: 200px;
+  border: 1px dashed $gray-4;
+  border-radius: 2px;
+  background: $gray-1;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.3s ease-in;
+  &.is-dragOver {
+    border: 1px dashed $primary;
+    background: lighten($primary, 30%)
+  }
+  .hlinak-upload-dragger-content {
+    padding: 1rem 0;
+    display: table;
+  }
+}
