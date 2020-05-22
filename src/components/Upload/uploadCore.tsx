@@ -1,68 +1,22 @@
-import React, { forwardRef, useRef, useImperativeHandle, ChangeEvent, useState } from 'react';
+import React, { forwardRef,useEffect, useRef, useImperativeHandle, ChangeEvent, useState } from 'react';
 import axios from 'axios';
-
-export interface UploadFile {
-  uid: number,
-  size: number,
-  name: string,
-  status?: 'success' | 'onload' | 'error',
-  percent?: number,
-  file?: File,
-  response?: any,
-  error?: any,
-}
-
-
-export interface IUploadCore {
-  /**上传了的文件 */
-  fileList: UploadFile[];
-  /**接受上传的文件类型 */
-  accept?: string[];
-  /**上传请求的 http method */
-  method?: 'post' | 'delete' | 'get' | 'put';
-  /**是否可多选 */
-  multiple?: boolean;
-  /**上传的文件名 */
-  filename?: string | ((file: File) => string);
-  /**上传的地址 */
-  action: string | ((file: File) => PromiseLike<string>);
-  /**设置上传的请求头部 */
-  headers?: object;
-  /**上传请求时是否携带 cookie */
-  withCredentials?: boolean;
-  /**	
-   * 上传文件之前的钩子，参数为上传的文件，若返回 false 则停止上传。
-   * 支持返回一个 Promise 对象，Promise 对象 reject 时则停止上传，
-   * resolve 时开始上传（ resolve 传入 File 或 Blob 对象则上传 resolve 传入对象） 
-   */
-  beforeUpload?: (file: File) => boolean | PromiseLike<File>;
-  /** 上传时的回调 */
-  onProgress?: (percent: number, file: File) => void;
-  /** */
-  onDownLoad?: (file: File) => void;
-  /** 上传成功时的回调 */
-  onSuccess?: (response: object, file: File) => void;
-  /**上传失败时的回调 */
-  onError?: (error: Error, file: File) => void;
-  /**	上传文件改变时的状态 */
-  onChange: (files: UploadFile[]) => void;
-}
-
-export interface IUploadRef {
-  focus: () => void;
-  blur: () => void;
-  click: () => void;
-}
+import {IUploadCore, IUploadRef, IUploadFile} from './interface';
 
 export const UpLoadCore = forwardRef<IUploadRef, IUploadCore>((props, ref) => {
   
   const {
     fileList,
-    
+    multiple,
+    accept,
+    onChange,
   } = props;
 
-  const [uploadFileList, setUploadFileList] = useState<UploadFile[]>(fileList || []);
+  const [uploadFileList, setUploadFileList] = useState<IUploadFile[]>(fileList || []);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    onChange && onChange(uploadFileList);
+  }, [uploadFileList])
 
   useImperativeHandle(ref, () => ({
     focus: () => inputRef.current!.focus(),
@@ -78,8 +32,10 @@ export const UpLoadCore = forwardRef<IUploadRef, IUploadCore>((props, ref) => {
     inputRef.current!.value = "";
   }
 
-  const updateFileList = (updateFile: UploadFile, updateObj: Partial<UploadFile>) => {
+  const updateFileList = (updateFile: IUploadFile, updateObj: Partial<IUploadFile>) => {
+    
     setUploadFileList(prevList => {
+      console.log(prevList)
       return prevList.map(file => {
         if (file.uid === updateFile.uid) {
           return {...file, ...updateObj};
@@ -119,12 +75,11 @@ export const UpLoadCore = forwardRef<IUploadRef, IUploadCore>((props, ref) => {
       onProgress,
       method,
       filename = 'file',
-      onChange,
       onError,
       onSuccess
     } = props;
 
-    const _file: UploadFile = {
+    const _file: IUploadFile = {
       uid: Date.now(),
       size: file.size,
       name: file.name,
@@ -145,12 +100,11 @@ export const UpLoadCore = forwardRef<IUploadRef, IUploadCore>((props, ref) => {
           "Content-Type": "multipart/form-data"
         },
         onUploadProgress: (e: any) => {
-          if (e.total > 0) {
-            let percent = Math.round((e.loaded * 100) / e.total) || 0;
-            if (percent < 100) {
-
-              onProgress && onProgress(percent, file);
-            }
+          console.log("progress")
+          let percent = Math.round((e.loaded * 100) / e.total) || 0;
+          if (percent < 100) {
+            updateFileList(_file, {percent})
+            onProgress && onProgress(percent, file);
           }
         },
         withCredentials,
@@ -166,7 +120,7 @@ export const UpLoadCore = forwardRef<IUploadRef, IUploadCore>((props, ref) => {
         } else {
           formData.append(filename, file);
         }
-        axiosReq = axios[method](action, axiosConfig);
+        axiosReq = axios[method](action, formData, axiosConfig);
       } else {
         console.error("method not correct");
         return;
@@ -176,11 +130,9 @@ export const UpLoadCore = forwardRef<IUploadRef, IUploadCore>((props, ref) => {
       axiosReq.then(res => {
         updateFileList(_file, {status: 'success', response: res.data, percent: 100})
         onSuccess && onSuccess(res, file);
-        onChange && onChange(uploadFileList);
       }).catch(err => {
         updateFileList(_file, {status: 'error', error: err, percent: 100})
         onError && onError(err, file);
-        onChange && onChange(uploadFileList);
       })
     })
   }
@@ -190,6 +142,9 @@ export const UpLoadCore = forwardRef<IUploadRef, IUploadCore>((props, ref) => {
       type="file"
       onChange={handleChange}
       ref={inputRef}
+      style={{display: "none"}} 
+      multiple={multiple} 
+      accept={accept && accept.toString()}
     />
   )
 })
