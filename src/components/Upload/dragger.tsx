@@ -15,11 +15,14 @@ export const Dragger:FC<DraggerProps> = (props) => {
 
   const handleDrop = (e: DragEvent<HTMLElement>) => {
     e.preventDefault();
+    console.log("drag")
     setDragOver(false);
     onFile(e.dataTransfer.files);
   }
   
   const handleDrag = (e: DragEvent<HTMLElement>, over: boolean) => {
+    e.preventDefault();
+    console.log("over")
     setDragOver(over)
   }
 
@@ -28,7 +31,7 @@ export const Dragger:FC<DraggerProps> = (props) => {
       className={dragCls}
       onDragOver={e => handleDrag(e, true)}
       onDragLeave={e => handleDrag(e, false)}
-      onDrop={handleDrop}
+      onDrop={(e) => {console.log("ondrop"); handleDrop(e)}}
     >
       <div className="hlinak-upload-dragger-content">
         Click or Drag file to this area to upload

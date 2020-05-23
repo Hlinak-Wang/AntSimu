@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
-import { UploadFile} from './upload';
 import TweenOne, { TweenOneGroup } from 'rc-tween-one';
 import { IAnimObject } from 'rc-tween-one/typings/AnimObject';
 import classnames from 'classnames';
 import Progress from '../Progress/progress';
+import { IUploadFile } from './interface';
 
 interface UploadListProps {
-  fileList: UploadFile[];
-  onRemove?: (file: UploadFile) => void
+  fileList: IUploadFile[];
+  onRemove?: (file: IUploadFile) => void
 }
 
 export const UploadList: FC<UploadListProps> = (props) => {
@@ -46,6 +46,7 @@ export const UploadList: FC<UploadListProps> = (props) => {
       leave={exitAnim}
       exclusive
     >
+      {console.log(fileList)}
       {
         fileList.map(file => {
           const cls = classnames('upload-file', {
@@ -56,9 +57,9 @@ export const UploadList: FC<UploadListProps> = (props) => {
                 <i className="fas fa-file-alt fa-sm upload-file-icon" />
                 {file.name}
               <div className="upload-file-status">
-                {file.status === 'onload' && <i className="fas fa-spinner fa-spin"></i>}
-                {file.status === 'success' && <i className="fas fa-check-circle"></i>}
-                {file.status === 'error' && <i className="fas fa-times-circle"></i>}
+                {file.status === 'onload' && <i className="fas fa-spinner fa-spin" data-testid="spin" />}
+                {file.status === 'success' && <i className="fas fa-check-circle" data-testid="check-circle" />}
+                {file.status === 'error' && <i className="fas fa-times-circle"  data-testid="times-circle" />}
               </div>
               <div className="upload-file-action">
                 <i className="fas fa-times" onClick={() => {onRemove && onRemove(file)}}></i>

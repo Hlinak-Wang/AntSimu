@@ -1,7 +1,7 @@
 import React, { FC, useRef, MouseEvent, useState } from 'react';
 import UploadList from './uploadList';
 import UpLoadCore from './uploadCore';
-import { IUploadFile, IUploadProps} from './interface';
+import { IUploadFile, IUploadProps, IUploadRef } from './interface';
 import Dragger from './dragger';
 
 export const Upload: FC<IUploadProps> = (props) => {
@@ -16,11 +16,11 @@ export const Upload: FC<IUploadProps> = (props) => {
     directory,
     defaultFileList,
     onChange,
-    dragArea,
+    dragEnable,
     ...uploadProps
   } = props;
 
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<IUploadRef | null>(null);
   const [fileList, setFileList] = useState<IUploadFile[]>(defaultFileList || []);
 
   const handleChange = (files: IUploadFile[]) => {
@@ -43,12 +43,13 @@ export const Upload: FC<IUploadProps> = (props) => {
 
   return (
     <div className="hlinak-upload-component">
-      <div className="hlinak-upload-input" onClick={handleClick}>
+      <div className="hlinak-upload-trigger" onClick={handleClick}>
         {
-          dragArea
+          dragEnable
           ? <Dragger
-            
-            >{children}</Dragger>
+              onFile={(files) => {inputRef.current!.upload(files)}}
+            >{children}
+            </Dragger>
           : children
         }
       </div>

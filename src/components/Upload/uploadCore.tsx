@@ -22,10 +22,13 @@ export const UpLoadCore = forwardRef<IUploadRef, IUploadCore>((props, ref) => {
     focus: () => inputRef.current!.focus(),
     blur: () => inputRef.current!.blur(),
     click: () => inputRef.current!.click(),
+    upload: (files) => uploadProcess(files),
   }))
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    
     const files = e.target.files;
+    console.log(files)
     if (!files) return;
 
     uploadProcess(files);
@@ -47,7 +50,9 @@ export const UpLoadCore = forwardRef<IUploadRef, IUploadCore>((props, ref) => {
   }
 
   const uploadProcess = (files: FileList) => {
+    
     const { beforeUpload } = props;
+    console.log(beforeUpload, fileList, multiple)
     const filesToUpload = Array.from(files);
 
     filesToUpload.forEach(file => {

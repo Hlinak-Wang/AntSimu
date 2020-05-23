@@ -1,11 +1,11 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import Upload, { UploadFile } from './upload';
-import Dragger from './dragger';
+import Upload from './upload';
+import { IUploadFile } from './interface';
 import Button from '../Button/button';
 import { action } from '@storybook/addon-actions';
 
-const defaultFileList: UploadFile[] = [
+const defaultFileList: IUploadFile[] = [
   {uid: 122, name: '12.txt', size: 10224, status: 'success', percent: 100},
   {uid: 124, name: '13.txt', size: 10234, status: 'error', percent: 0},
   {uid: 241, name: '14.txt', size: 10244, status: 'onload', percent: 10},
@@ -27,14 +27,14 @@ const changFile = (file: File) => {
 storiesOf('Upload', module)
   .add('test', () => (
     <Upload 
-      drag
+      dragEnable
       action="http://www.mocky.io/v2/5ec39a30300000720039c1e2"
       defaultFileList={defaultFileList}
       onProgress={ action('progress')}
       onSuccess={ action('success')}
       onError={ action('error')}
     >
-      <Dragger>upload</Dragger>
+      upload
     </Upload>
   ))
   .add('beforeUpload Check', () => (

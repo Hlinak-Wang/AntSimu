@@ -86,3 +86,8 @@ $upload-file-status: (
     display: table;
   }
 }
+
+.hlinak-upload-trigger {
+  display: inline-block;
+  //pointer-events: none;
+}
