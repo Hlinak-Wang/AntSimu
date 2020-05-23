@@ -49,7 +49,7 @@ describe('test set for alert', () => {
 
   it('test for closable', () => {
     let closeProps = {
-      onClose: jest.fn(),
+      onClose: jest.fn(), 
       afterClose: jest.fn(),
       closable: true
     };

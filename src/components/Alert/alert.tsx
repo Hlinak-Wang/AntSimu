@@ -74,7 +74,6 @@ const Alert: React.FC<baseAlertProps> = (props) => {
             <button className="alert-close-button" onClick={handleOnClose}>
                 {closeText}
             </button>
-          }
         </div>
       </CSSTransition>
     )
