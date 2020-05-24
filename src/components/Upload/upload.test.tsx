@@ -13,13 +13,21 @@ import { act } from 'react-dom/test-utils';
 }) */
 
 //const jestAxios = axios as jest.Mocked<typeof axios>;
+/**
+ * action list:
+ * http://www.mocky.io/v2/5ec939dc2f0000354adb719a return {"test": "ok"}
+ * http://www.mocky.io/v2/5eca74eb300000492ca6cfd3 return {"file-size": "small"}
+ * http://www.mocky.io/v2/5eca75073000006300a6cfd6 return {"file-size": "large"}
+ */
+
 let wrapper: RenderResult, fileInput: HTMLInputElement, uploadArea: HTMLDivElement;
 
 async function checkFileUpload(
   wrapper: RenderResult, 
   testProps: Pick<IUploadProps, "onSuccess" | "onProgress" | "onChange">, 
   fileCalled: File, 
-  expectStatus: {onload: number, success?: number, error?: number}
+  expectStatus: {onload: number, success?: number, error?: number},
+  expectResponce: any
   ) {
   expect(testProps.onChange).toBeCalled();
   await wait(() => {
@@ -33,7 +41,7 @@ async function checkFileUpload(
 
   expect(testProps.onProgress).toBeCalled();
   //expect(queryByText()) 
-  expect(testProps.onSuccess).toBeCalledWith({'test': "ok"}, fileCalled)
+  expect(testProps.onSuccess).toBeCalledWith(expectResponce, fileCalled)
 }
 
 describe("test for action", () => {
@@ -56,7 +64,34 @@ describe("test for action", () => {
       fireEvent.change(fileInput, { target: { files: [testFile] }});
     })
     
-    await checkFileUpload(wrapper, testProps, testFile, {onload: 1, success: 1});
+    await checkFileUpload(wrapper, testProps, testFile, {onload: 1, success: 1}, {'test': "ok"});
+  })
+
+  it("action is function", async () => {
+    wrapper = render(
+      <Upload 
+        {...testProps} 
+        action={file => {
+          if (file.size < 10) {
+            return Promise.resolve("http://www.mocky.io/v2/5eca74eb300000492ca6cfd3")
+          } else {
+            return Promise.resolve("http://www.mocky.io/v2/5eca75073000006300a6cfd6")
+          }
+        }}
+      >
+        upload
+      </Upload>
+    );
+    fileInput = wrapper.container.querySelector("input") as HTMLInputElement;
+    expect(wrapper).toMatchSnapshot();
+    
+    const smallFile = new File(Array(1), "small.txt");
+    act(() => {
+      fireEvent.change(fileInput, { target: { files: [smallFile]}});
+    });
+
+    await checkFileUpload(wrapper, testProps, smallFile, { onload: 1, success: 1}, {"file-size": "small"})
+
   })
 })
 
@@ -81,13 +116,13 @@ describe('basic test', () => {
     })
 
     expect(testProps.onChange).toBeCalled();
-    await checkFileUpload(wrapper, testProps, file1, {onload: 1, success: 1});
+    await checkFileUpload(wrapper, testProps, file1, {onload: 1, success: 1}, {'test': "ok"});
 
     const file2 = new File(Array(2), "file2.txt")
     act(() => {
       fireEvent.change(fileInput, { target: { files: [file2] }});
     })
-    await checkFileUpload(wrapper, testProps, file2, {onload: 1, success: 2});
+    await checkFileUpload(wrapper, testProps, file2, {onload: 1, success: 2}, {'test': "ok"});
   })
 
   it('test beforeUpload which return boolean', async () => {

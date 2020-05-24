@@ -59,12 +59,14 @@ function axiosUpload(files: FileList, props: IUploadCore, changeFileList: Dispat
 
     new Promise<string>((resolve, reject) => {
       if (typeof action === 'function') {
+        console.log("action function")
         return resolve(action(file));
       } else if (typeof action === 'string') {
         return resolve(action);
       }
       reject("action is not function or string")
     }).then(action => {
+      console.log(action)
       const axiosConfig = {
         headers: {
           ...headers,
@@ -105,6 +107,7 @@ function axiosUpload(files: FileList, props: IUploadCore, changeFileList: Dispat
         updateFileList(_file, {status: 'success', response: res.data, percent: 100})
         onSuccess && onSuccess(res.data, file);
       }).catch(err => {
+        console.log("err")
         updateFileList(_file, {status: 'error', error: err, percent: 100})
         onError && onError(err, file);
       })
