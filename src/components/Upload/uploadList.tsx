@@ -46,7 +46,6 @@ export const UploadList: FC<UploadListProps> = (props) => {
       leave={exitAnim}
       exclusive
     >
-      {console.log(fileList)}
       {
         fileList.map(file => {
           const cls = classnames('upload-file', {

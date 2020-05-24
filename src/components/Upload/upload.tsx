@@ -1,7 +1,7 @@
-import React, { FC, useRef, MouseEvent, useState } from 'react';
+import React, { FC, useRef, MouseEvent, useState, ChangeEvent, DragEvent, useEffect } from 'react';
 import UploadList from './uploadList';
-import UpLoadCore from './uploadCore';
-import { IUploadFile, IUploadProps, IUploadRef } from './interface';
+import axiosUpload from './uploadCore';
+import { IUploadFile, IUploadProps } from './interface';
 import Dragger from './dragger';
 
 export const Upload: FC<IUploadProps> = (props) => {
@@ -15,21 +15,29 @@ export const Upload: FC<IUploadProps> = (props) => {
     listType,
     directory,
     defaultFileList,
+    multiple,
+    accept,
     onChange,
     dragEnable,
     ...uploadProps
   } = props;
 
-  const inputRef = useRef<IUploadRef | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const [fileList, setFileList] = useState<IUploadFile[]>(defaultFileList || []);
 
-  const handleChange = (files: IUploadFile[]) => {
-    setFileList([...files])
-    onChange && onChange(files)
-  } 
+  useEffect(() => {
+    onChange && onChange(fileList);
+  }, [fileList]);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    axiosUpload(files, uploadProps, setFileList);
+    inputRef.current!.value = "";
+  }
   
   const handleClick = (e: MouseEvent) => {
-    console.log('click')
     e.preventDefault()
     inputRef.current && inputRef.current.click();
   }
@@ -47,17 +55,19 @@ export const Upload: FC<IUploadProps> = (props) => {
         {
           dragEnable
           ? <Dragger
-              onFile={(files) => {inputRef.current!.upload(files)}}
+              onFile={(files) => {axiosUpload(files, props, setFileList)}}
             >{children}
             </Dragger>
           : children
         }
       </div>
-      <UpLoadCore 
-        fileList={fileList}
+      <input
+        type="file"
+        style={{display: "none"}}
         onChange={handleChange}
         ref={inputRef}
-        {...uploadProps}
+        multiple={multiple} 
+        accept={accept && accept.toString()}
       />
       <UploadList fileList={fileList} onRemove={hanldeRemove}/>
     </div>

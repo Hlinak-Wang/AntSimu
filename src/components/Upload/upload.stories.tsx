@@ -55,6 +55,8 @@ storiesOf('Upload', module)
       onProgress={ action('progress')}
       onSuccess={ action('success')}
       onError={ action('error')}
+      onChange={() => console.log("change")}
+      //onChange={ action('change')}
     >
       <Button>upload</Button>
     </Upload>

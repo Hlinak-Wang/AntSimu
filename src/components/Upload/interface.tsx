@@ -7,6 +7,7 @@ export interface IUploadFile {
   file?: File,
   response?: any,
   error?: any,
+  cancel?: () => void
 }
 
 export interface IUploadRef {
