@@ -57,11 +57,13 @@ function axiosUpload(files: FileList, props: IUploadCore, changeFileList: Dispat
       file: file,
     }
 
-    new Promise<string>(resolve => {
+    new Promise<string>((resolve, reject) => {
       if (typeof action === 'function') {
         return resolve(action(file));
+      } else if (typeof action === 'string') {
+        return resolve(action);
       }
-      return resolve(action);
+      reject("action is not function or string")
     }).then(action => {
       const axiosConfig = {
         headers: {
