@@ -1,34 +1,29 @@
 import React, { FC, AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode, MouseEventHandler, useState } from 'react';
 import classnames from 'classnames';
-import omit from 'omit.js';
 
-export type ButtonSize = 'sm' | 'lg';
+export type ButtonSize = 'sm' | 'mid' | 'lg';
 
-export type ButtonType = 'primary' | 'default' | 'link';
+export type ButtonType = "default" | 'dash' | 'vacuum';
 
-export type ButtonHTMLType = 'button' | 'submit' | 'reset';
-
-interface baseButtonProps {
+export interface baseButtonProps {
   className ?: string;
   /**设置Button是否为禁用 */
   disabled ?: boolean;
   /**设置Button的尺寸 */
   size?: ButtonSize;
   /**设置Button的类型 */
-  type?: ButtonType;
+  btnType?: ButtonType;
   children?: ReactNode;
   href?: string;
   danger?:boolean;
-  HTMLType?: string;
   block?: boolean;
 }
 
 export type NativeButtonProps = {
-    HTMLType: ButtonHTMLType;
     onClick?: MouseEventHandler<HTMLElement>
   }
   & baseButtonProps
-  & Omit<ButtonHTMLAttributes<HTMLElement>, 'type' | 'oncLick'>;
+  & Omit<ButtonHTMLAttributes<HTMLElement>, 'oncLick'>;
  
 export type NativeAnchorProps = {
   onClick?:MouseEventHandler<HTMLElement>
@@ -48,78 +43,49 @@ export type ButtonProps = Partial<NativeAnchorProps & NativeButtonProps>;
 export const Button: FC<ButtonProps> = (props) => {
   const { 
     className,
-    type,
+    btnType,
     disabled,
     size,
     children,
+    href,
     danger,
     block,
     ...propsLeft
   } = props;
-  
-  const [clickStatus, setStatus] = useState(false);
 
   const handleClick:React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement> = e => {
-    const { onClick } = props;
-    setStatus(true);
-    
-    if (onClick) {
-      (onClick as React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>)(e)
-    }
+    const { onClick } = props;  
+    onClick &&  (onClick as React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>)(e)
   }
 
-  const linkButtonProps = omit(propsLeft as NativeAnchorProps, ['HTMLType']);
+  const classes = classnames('btn', className, {
+    [`btn-${btnType}-style`]: true,
+    [`btn-${size}-size`]: size,
+    'btn-danger': danger,
+    'btn-block': block,
+  })
 
-  if (linkButtonProps.href !== undefined && !disabled) {
-    const href = linkButtonProps.href;
-    const classes = classnames('btn', className, {
-      [`btn-${type}`]: type,
-      [`btn-${size}`]: size,
-      'btn-danger': danger,
-      'btn-block': block,
-      disabled: href !== undefined && disabled,
-      'animated swing': clickStatus
-    })
-
-    return (
+  return (
+    <button
+      className={classes}
+      disabled={disabled}
+      onClick={handleClick}
+      {...propsLeft}
+    >
       <a
-        className={classes}
-        href = {href}
-        onClick={handleClick}
-        {...linkButtonProps}
+        href={href}
       >
         {children}
       </a>
-    );
-  } else {
-    const { HTMLType, ...buttonProps} = propsLeft;
-    const classes = classnames('btn', className, {
-      [`btn-${type}`]: type,
-      [`btn-${size}`]: size,
-      'btn-danger': danger,
-      'btn-block': block,
-      'click-animate': clickStatus
-    })
-    return (
-      <button
-        className={classes}
-        disabled = {disabled}
-        type={HTMLType}
-        onClick = {handleClick}
-        onAnimationEnd={() => setStatus(false)}
-        {...buttonProps}
-      >
-        {children}
-      </button>
-    )
-  }
+    </button>
+  )
 }
 
 Button.defaultProps = {
   disabled: false,
   danger: false,
-  type: 'default',
-  HTMLType: 'button',
+  size: 'mid',
+  btnType: 'default',
 }
 
 export default Button;

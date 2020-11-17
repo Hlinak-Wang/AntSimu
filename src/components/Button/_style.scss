@@ -1,15 +1,142 @@
+@keyframes outline-default {
+  from {
+    box-shadow: 0 0 0px 0px transparent;
+  }
+  15% {
+    box-shadow: 0 0 5px 1px darken($primary, 5%);
+  }
+  to {
+    box-shadow: 0 0 10px 0px transparent;
+  }
+}
+
+@keyframes outline-default-danger {
+  from {
+    box-shadow: 0 0 0px 0px transparent;
+  }
+  15% {
+    box-shadow: 0 0 5px 1px darken($danger, 5%);
+  }
+  to {
+    box-shadow: 0 0 10px 0px transparent;
+  }
+}
+
+@mixin btn-style(
+  $background,
+  $border,
+  $fontColor,
+  $borderStyle,
+  $activeBack: $background,
+  $activeBorder: $border,
+  $activeColor: $fontColor
+) {
+  color: $fontColor;
+  border-style: $borderStyle;
+  border-width: 1px;
+  border-color: $border;
+  background: $background;
+
+  &:hover {
+    background-color: lighten($activeBack, 5%);
+    border-color: lighten($activeBorder, 5%);
+    color: lighten($activeColor, 5%);
+  }
+  &:active {
+    background-color: darken($activeBack, 5%);
+    border-color: darken($activeBorder, 5%);
+    color: darken($activeColor, 5%);
+  }
+}
+
+@mixin button-size($padding, $font-size) {
+  font-size: $font-size;
+  > a {
+    padding: $padding;
+  }
+}
+
+.btn-default-style {
+  @include btn-style($primary, $primary, white, solid);
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 0; right: 0;
+    background: transparent;
+    box-shadow: 0 0 10px 5px transparent;
+  }
+  &:focus::after {
+    animation: outline-default 0.3s;
+  }
+  &.btn-danger {
+    @include btn-style($danger, $danger, white, solid);
+    &:focus::after {
+      animation: outline-default-danger 0.3s;
+    }
+  }
+}
+
+.btn-dash-style {
+  @include btn-style(transparent, #8c8c8c, #000, dashed, transparent, $primary, $primary);
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 0; right: 0;
+    background: transparent;
+    box-shadow: 0 0 10px 5px transparent;
+  }
+  &:focus::after {
+    animation: outline-default 0.3s;
+  }
+  &.btn-danger {
+     @include btn-style(transparent, $danger, $danger, dashed);
+     &:focus::after {
+      animation: outline-default-danger 0.3s;
+    }
+  }
+}
+
+.btn-vacuum-style {
+  @include btn-style(transparent, transparent, #000000, hidden, rgba(0,0,0,0.05), transparent);
+
+  &::before, &::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top:0; bottom: 0;
+    right: 0; left: 0;
+    margin: auto;
+    z-index: -1;
+  }
+
+  &::before {
+    background: $primary;
+  }
+  &::after {
+    background: rgba(0,0,0,0.05);
+  }
+  
+  &.btn-danger {
+    @include btn-style(transparent, transparent, #000000, hidden, lighten($danger,20%), transparent, white);
+  }
+}
+
+
+
 .btn {
-  @include button-size($btn-height, $btn-padding, $btn-font-size);
   display: inline-block;
   position: relative;
   text-align: center;
   white-space: nowrap;
+  box-sizing: border-box;
   background-image: none;
   font-family: $btn-font-family;
-  border: $btn-border-width solid transparent;
   border-radius: $btn-border-radius;
-  color: $body-color;
-  
+  padding: 0;
+
   cursor: pointer;
   &:focus {
     outline: none;
@@ -18,9 +145,27 @@
     cursor: not-allowed;
     opacity: $btn-disabled-opacity;
     box-shadow: none;
-    > * {
+    background-color: #f5f5f5;
+    border-color:  #d9d9d9;
+    border-style: solid;
+    color: rgba(0,0,0,.25);
+
+    > * {// prevent all child's event
       pointer-events: none;
     }
+
+    &:hover {
+      background-color: #f5f5f5;
+      border-color:  #d9d9d9;
+      color: rgba(0,0,0,.25);
+    }
+  }
+  > a {
+    font-size: inherit;
+    line-height: unset;
+    display:inline-block;
+    color: inherit;
+    text-decoration: none;
   }
 }
 
@@ -28,37 +173,14 @@
   width: 100%;
 }
 
-.btn-lg {
-  @include button-size($btn-height-lg, $btn-padding-lg, $btn-font-size-lg);
+.btn-sm-size {
+  @include button-size(0 0.5em, 14px)
 }
 
-.btn-sm {
-  @include button-size($btn-height-sm, $btn-padding-sm, $btn-font-size-sm);
+.btn-mid-size {
+  @include button-size(0.2em 1em, 16px)
 }
 
-.btn-default {
-  @include btn-style($white, $gray-8, $body-color, $white, $primary, $primary);
-  &.btn-danger {
-    @include btn-style($white, $danger, $danger);
-  }
-
-  @include button-disabled-style($gray-2, $gray-4, rgba($black, 0.5));
-}
-
-.btn-primary {
-  @include btn-style($primary, $primary, $white);
-  &.btn-danger {
-    @include btn-style($danger, $danger, $white);
-  }
-
-  @include button-disabled-style($gray-2, $gray-4, rgba($black, 0.5));
-}
-
-.btn-link {
-  @include btn-style($white, $white, $primary);
-  &.btn-danger {
-    @include btn-style($white, $white, $danger);
-  }
-
-  @include button-disabled-style($white, $white, rgba($black, 0.5));
+.btn-lg-size {
+  @include button-size(0.2em 2em, 18px)
 }
