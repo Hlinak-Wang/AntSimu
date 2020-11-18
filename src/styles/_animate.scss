@@ -6,22 +6,22 @@
 
 @include btn-keyframes();
 
-.click-animate {
-  &.btn-primary, &.btn-default {
-    animation-name: click-primary;
-    &.btn-danger {
-      animation-name: click-primary-danger;
-    }
-  }
-  &.btn-link {
-    animation-name: click-link;
-    &.btn-danger {
-      animation-name: click-link-danger;
-    }
-  }
-  animation-duration: 0.3s;
-  animation-fill-mode: both;
-}
+// .btn-click-animate {
+//   &.btn-dash-style, &.btn-default-style {
+//     animation-name: click-primary;
+//     &.btn-danger {
+//       animation-name: click-primary-danger;
+//     }
+//   }
+//   &.btn-link {
+//     animation-name: click-link;
+//     &.btn-danger {
+//       animation-name: click-link-danger;
+//     }
+//   }
+//   animation-duration: 0.3s;
+//   animation-fill-mode: both;
+// }
 
 @keyframes show {
   from {

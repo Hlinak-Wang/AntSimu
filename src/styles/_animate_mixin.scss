@@ -94,7 +94,7 @@
 }
 
 @mixin menu-selected($class, $direction) {
-  > .#{$class} {
+  > #{$class} {
     &::after {
       content: "";
       position: absolute;
