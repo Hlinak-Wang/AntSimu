@@ -1,9 +1,11 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useContext, useState, useEffect, useRef, CSSProperties, createRef, ReactNode } from 'react';
 import classnames from 'classnames';
 import { MenuContext } from './menu'
 import { MenuItemProps } from './menuItem';
+import PopUp from '../popUp/PopUp';
 import Icon from '../Icon/icon';
 import Animate from '../Animate/animate';
+import { CSSTransition } from 'react-transition-group';
 
 interface SubMenuProps {
   handleKey: string;
@@ -11,16 +13,17 @@ interface SubMenuProps {
   title:string;
   disabled?:boolean;
   defaultOpen?: boolean;
+  parent?: () => ReactNode;
   clickRes?: () => void;
   children?: React.ReactNode[];
 }
 
-const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled, defaultOpen, clickRes, children }) => {
+const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled, defaultOpen, clickRes, children, parent }) => {
 
   const [menuOpen, setOpen] = useState(false);
   const [childSelect, setStatus] = useState(false);
   const context = useContext(MenuContext);
-  const subContainRef = useRef<HTMLLIElement | null>(null)
+  const subContainRef = createRef<HTMLLIElement>()
 
   function loopCheck(children: React.ReactNode[]):boolean {
     
@@ -41,36 +44,31 @@ const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled,
   }
 
   useEffect(() => {
-    console.log("efftec")
     setStatus(false)
     React.Children.forEach(children, child => {
       const childElement = child as React.FunctionComponentElement<MenuItemProps>;
       const displayName = childElement.type.displayName || childElement.type.name;
-      console.log(childElement)
       if (displayName === 'SubMenu') {
         const subChild = child as React.FunctionComponentElement<SubMenuProps>;
         const subChildList = React.Children.toArray(subChild.props.children);
         if (loopCheck(subChildList)) {
-          console.log("been")
           setStatus(true);
         }  
       } else {
-        console.log(childSelect)
         if (context.selectKey.findIndex(value => value === childElement.props.handleKey) >= 0) {
-          console.log("setrue")
           setStatus(true)
         }
       }
     })
-    console.log(context.selectKey)
   }, [context.selectKey])
 
-  const classes = classnames('submenu', className, {
+  const classes = classnames('submenu', "submenu-title", className, {
     'is-disabled': disabled,
     'menu-open': menuOpen,
-    'child-selected': childSelect
+    'is-active': childSelect
   })
 
+  // 设置窗口关闭时间间隔
   let timer: any;
   const handleMouse = (toggle: boolean, timeOut: number) => {
     clearTimeout(timer);
@@ -79,68 +77,64 @@ const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled,
     }, timeOut)
   }
 
-  const handleClick = (e:React.MouseEvent) => {
-    e.preventDefault();
-    setOpen(!menuOpen);
-  }
+  // const handleClick = (e:React.MouseEvent) => {
+  //   e.preventDefault();
+  //   setOpen(!menuOpen);
+  // }
 
-  const clickEvent = context.inline
-    ? {onClick: handleClick} 
-    : {};
+  // inline 属性
+  // const clickEvent = context.inline
+  //   ? {onClick: handleClick} 
+  //   : {};
   
-  const mouseEvent = !context.inline ? {
+  const mouseEvent =  {
     onMouseEnter: () => {handleMouse(true, 50)},
     onMouseLeave: () => {handleMouse(false, 50)}
-  } : {};
+  };
 
+  // 渲染子组件
   const renderChild = () => {
     
     const childrenComponent = React.Children.map(children, (child) => {
+      // 检查子组件是否为MenuItem或SubMenu
+      // 若为规定的子组件且渲染模式为inline，为其传入handleMouse函数
       const childElement = child as React.FunctionComponentElement<MenuItemProps>;
       const displayName = childElement.type.displayName || childElement.type.name;
       if (displayName === 'MenuItem' || displayName === 'SubMenu') {
-        return context.inline 
-          ? childElement
-          : React.cloneElement(childElement, {
+        return React.cloneElement(childElement, {
             // 给子级传入handleMouse 函数， 当点击事件在子级触发时执行，并且handleMouse触发以umount父级，并且如果有父级的父级的话在50ms的延迟下再unmount父级的父级
-            clickRes: () => {handleMouse(false, 50); setTimeout(() => {clickRes && clickRes()}, 50)}
+            clickRes: () => {handleMouse(false, 50); setTimeout(() => {clickRes && clickRes()}, 50)},
+            parent: () => subContainRef.current
           })
-        
       } else {
         console.error("Menu has a child which is not MenuItem component")
       }
     })
 
-    let subMenuPosition;
-    if (clickRes !== undefined || context.mode === 'vertical') {
-      subMenuPosition = {top: "0", left: subContainRef.current ? `${subContainRef.current.clientWidth + 5}px` : "50px"}
-    } else {
-      subMenuPosition = {left: "0", top: subContainRef.current ? `${subContainRef.current.clientHeight + 5}px` : "50px"}
+    if (context.subMode == 'pop') {
+      return (
+        <PopUp 
+          getTriggerNode={() => subContainRef.current} 
+          popDirec={context.mode == 'horizontal' && !parent ? 'bottom':'right'}
+          popUpStyle={{background: "white", boxShadow: "0 0 3px 1px #666", minWidth:"80px"}}
+          arrowSize={8}
+        >
+          <ul
+            className="subMenu-payload"
+            //className={`subItem-container ${context.inline? 'inline': "outline"}`} 
+          >
+            {childrenComponent}
+          </ul>
+        </PopUp>
+      )
     }
-
-    return (
-    <Animate
-      in={menuOpen}
-      timeout={300}
-      classNames={`pull-out-top`}
-    >
-      <ul 
-        className={`subItem-container ${context.inline? 'inline': "outline"}`} 
-        style={subMenuPosition}
-      >
-        {childrenComponent}
-      </ul>
-    </Animate>
-    )
   }
   
   return (
     <li className={classes} {...mouseEvent} ref={subContainRef}>
-      <div className="submenu-title" {...clickEvent}>
         { title }
-        <div className={`arrow-${context.inline || context.mode === 'horizontal' ? "up-down": "left-right"} ${menuOpen ? 'open' : "" }`}/>
-      </div>
-      { renderChild() }
+        {/* <div className={`arrow-${context.inline || context.mode === 'horizontal' ? "up-down": "left-right"} ${menuOpen ? 'open' : "" }`}/> */}
+      { menuOpen && renderChild() }
     </li>
   )
 }

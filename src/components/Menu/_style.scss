@@ -4,10 +4,11 @@
   padding-left: 10px;
   margin: 5px 0;
   list-style: none;
-  .menu-item {
+  > li {
     cursor: pointer;
     transition: $menu-transition;
     position: relative;
+    padding: 6px 8px;
     &:hover, &:focus {
       text-decoration: none;
     }
@@ -25,89 +26,114 @@
 }
 
 .menu-vertical {
-  @include menu-style(vertical);
-  .submenu {
-    @include basic-subMenu-style(vertical);
-    @include subMenu-popup-style(vertical);
+  flex-direction: column;
+  margin-bottom: 0px;
+  border-right: 1px solid $gray-3;
+  > li {
+    border-left: $menu-item-active-border-width solid transparent; 
+    cursor: pointer;
+    transition: $menu-transition;
+    padding: $menu-item-padding-vertical;
+    position: relative;
   }
+  @include menu-selected(li, vertical)
 }
 
 .menu-horizontal {
-  @include menu-style(horizontal);
-  .submenu {
-    @include basic-subMenu-style(horizontal);
-    @include subMenu-popup-style(horizontal);
+  flex-direction: row;
+  margin-bottom: 30px;
+  border-bottom: $menu-border-width solid $menu-border-color;
+  > li {
+    padding: .5rem 1rem;
+    position: relative;
+    margin-bottom: -1px;
   }
+  @include menu-selected(li, horizontal);
 }
 
-.arrow-up-down {
-  position: relative;
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 5px;
-  &::before {
-    content: '';
-    transform: rotate(-45deg) translateX(2px);
-    width: 6px;
-    height: 1.5px;
-    background: black;
-    position: absolute;
-    border-radius: 2px;
-    transition: transform .3s cubic-bezier(.645,.045,.355,1);
+.subMenu-payload {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  > li {
+    padding: 8px 8px;
+    cursor: pointer;
+    position: relative;
+    &:hover {
+      color: $menu-item-active-color;
+    }
   }
-
-  &::after {
-    content: "";
-    transform: rotate(45deg) translateX(-2px);
-    width: 6px;
-    height: 1.5px;
-    background: black;
-    position: absolute;
-    border-radius: 2px;
-    transition: transform .3s cubic-bezier(.645,.045,.355,1);
-  }
-
-  &.open::before {
-    transform: rotate(-45deg) translateX(-2px);
-  }
-
-  &.open::after {
-    transform: rotate(45deg) translateX(2px);
-  }
+  @include menu-selected(li, vertical);
 }
 
-.arrow-left-right {
-  position: relative;
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 5px;
-  &::before {
-    content: '';
-    transform: rotate(-45deg) translateY(2px);
-    width: 6px;
-    height: 1.5px;
-    background: black;
-    position: absolute;
-    border-radius: 2px;
-    transition: transform .3s cubic-bezier(.645,.045,.355,1);
-  }
+// .arrow-up-down {
+//   position: relative;
+//   display: inline-block;
+//   vertical-align: middle;
+//   margin-left: 5px;
+//   &::before {
+//     content: '';
+//     transform: rotate(-45deg) translateX(2px);
+//     width: 6px;
+//     height: 1.5px;
+//     background: black;
+//     position: absolute;
+//     border-radius: 2px;
+//     transition: transform .3s cubic-bezier(.645,.045,.355,1);
+//   }
 
-  &::after {
-    content: "";
-    transform: rotate(45deg) translateY(-2px);
-    width: 6px;
-    height: 1.5px;
-    background: black;
-    position: absolute;
-    border-radius: 2px;
-    transition: transform .3s cubic-bezier(.645,.045,.355,1);
-  }
+//   &::after {
+//     content: "";
+//     transform: rotate(45deg) translateX(-2px);
+//     width: 6px;
+//     height: 1.5px;
+//     background: black;
+//     position: absolute;
+//     border-radius: 2px;
+//     transition: transform .3s cubic-bezier(.645,.045,.355,1);
+//   }
 
-  &.open::before {
-    transform: rotate(-45deg) translateY(-2px);
-  }
+//   &.open::before {
+//     transform: rotate(-45deg) translateX(-2px);
+//   }
 
-  &.open::after {
-    transform: rotate(45deg) translateY(2px);
-  }
-}
+//   &.open::after {
+//     transform: rotate(45deg) translateX(2px);
+//   }
+// }
+
+// .arrow-left-right {
+//   position: relative;
+//   display: inline-block;
+//   vertical-align: middle;
+//   margin-left: 5px;
+//   &::before {
+//     content: '';
+//     transform: rotate(-45deg) translateY(2px);
+//     width: 6px;
+//     height: 1.5px;
+//     background: black;
+//     position: absolute;
+//     border-radius: 2px;
+//     transition: transform .3s cubic-bezier(.645,.045,.355,1);
+//   }
+
+//   &::after {
+//     content: "";
+//     transform: rotate(45deg) translateY(-2px);
+//     width: 6px;
+//     height: 1.5px;
+//     background: black;
+//     position: absolute;
+//     border-radius: 2px;
+//     transition: transform .3s cubic-bezier(.645,.045,.355,1);
+//   }
+
+//   &.open::before {
+//     transform: rotate(-45deg) translateY(-2px);
+//   }
+
+//   &.open::after {
+//     transform: rotate(45deg) translateY(2px);
+//   }
+// }

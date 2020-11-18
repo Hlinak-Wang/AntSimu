@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, ReactNode } from 'react';
 import classnames from 'classnames';
 import { MenuContext } from './menu';
 import Animate from '../Animate/animate';
@@ -9,6 +9,7 @@ export interface MenuItemProps {
   className?:string;
   style?:React.CSSProperties;
   clickRes?: () => void;
+  parent?: () => ReactNode;
 }
 
 const MenuItem:React.FC<MenuItemProps> = (props) => {

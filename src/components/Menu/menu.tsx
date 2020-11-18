@@ -4,23 +4,24 @@ import { MenuItemProps } from './menuItem';
 import { Context } from '@emotion/stylis';
 
 type MenuMode = 'horizontal' | 'vertical';
+type SubMenuMode = 'pop' | 'inline';
 type SelectCallBack = (selectIndex: string) => void;
 
 export interface MenuProps {
   mode?: MenuMode;
+  subMode?: SubMenuMode;
   defaultIndex?: string[];
   className?: string;
   style?:React.CSSProperties;
   onSelect?:SelectCallBack;
   multiple?: boolean;
-  inline?: boolean;
 }
  
 interface IMenuContext {
   selectKey: string[];
   onSelect?: SelectCallBack;
   mode?:MenuMode;
-  inline?:boolean;
+  subMode?: SubMenuMode;
 }
 
 export const MenuContext = createContext<IMenuContext>({selectKey: []})
@@ -28,18 +29,19 @@ export const MenuContext = createContext<IMenuContext>({selectKey: []})
 const Menu: React.FC<MenuProps> = (props) => {
   const {
     mode,
+    subMode,
     defaultIndex,
     className,
     style,
     onSelect,
     multiple,
-    inline,
     children
   } = props;
 
   const [ currentActive, setActive ] = useState(defaultIndex ? defaultIndex : []);
 
   useEffect(() => {
+    // 检查children是否为MenuItem或SubMenu
     React.Children.forEach(children, (child) => {
       const childElement = child as React.FunctionComponentElement<MenuItemProps>;
       const displayName = childElement.type.displayName || childElement.type.name;
@@ -69,11 +71,12 @@ const Menu: React.FC<MenuProps> = (props) => {
     onSelect && onSelect(index) 
   }
 
+  // children的样式
   const passedContext: IMenuContext = {
     selectKey: currentActive ? [...currentActive] : [],
     onSelect: handleClick,
     mode,
-    inline
+    subMode,
   }
 
   const classes = classnames('menu', className, {
@@ -89,10 +92,9 @@ const Menu: React.FC<MenuProps> = (props) => {
   )
 }
 
-
 Menu.defaultProps = {
   mode: 'vertical',
+  subMode: 'pop',
   multiple: false,
-  inline: false
 }
 export default Menu;
