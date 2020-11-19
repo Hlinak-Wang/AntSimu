@@ -54,6 +54,7 @@ export const Button: FC<ButtonProps> = (props) => {
   } = props;
 
   const handleClick:React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement> = e => {
+    e.currentTarget.blur()
     const { onClick } = props;  
     onClick &&  (onClick as React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>)(e)
   }

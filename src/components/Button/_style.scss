@@ -100,24 +100,6 @@
 
 .btn-vacuum-style {
   @include btn-style(transparent, transparent, #000000, hidden, rgba(0,0,0,0.05), transparent);
-
-  &::before, &::after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top:0; bottom: 0;
-    right: 0; left: 0;
-    margin: auto;
-    z-index: -1;
-  }
-
-  &::before {
-    background: $primary;
-  }
-  &::after {
-    background: rgba(0,0,0,0.05);
-  }
   
   &.btn-danger {
     @include btn-style(transparent, transparent, #000000, hidden, lighten($danger,20%), transparent, white);
