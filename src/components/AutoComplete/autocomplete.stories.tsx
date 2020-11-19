@@ -22,26 +22,27 @@ const localAuto = () => {
 
 }
 const netAuto = () => {
-
   type DataType = {value: string};
 
   const handleFetch = (keyword: string) => {
+    // send fetch request
     return fetch(`https://api.github.com/search/users?q=${keyword}`)
     .then(res => res.json())
     .then(({ items }) => {
-      return items.slice(0, 10).map(item => ({value: item.login, ...item}))
+      return items.slice(0, 10).map((item: { login: any; }) => ({value: item.login, ...item}))
     })
-  } 
+  }
 
   const renderOption = (item: OptionType) => {
     const options = item as OptionType<DataType>;
     return (
       <>
-      <h2>name: {options.value}</h2>
+      <span>name: {options.value}</span>
       </>
     )
   }
   return <AutoComplete fetchSuggestion={handleFetch} onSelect={action('selected')} renderOption={renderOption}/>
+  
 }
 
 storiesOf('autocomplete', module)
