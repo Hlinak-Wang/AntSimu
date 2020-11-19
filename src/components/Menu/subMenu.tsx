@@ -12,13 +12,12 @@ interface SubMenuProps {
   className?: string;
   title:string;
   disabled?:boolean;
-  defaultOpen?: boolean;
   parent?: () => ReactNode;
   clickRes?: () => void;
   children?: React.ReactNode[];
 }
 
-const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled, defaultOpen, clickRes, children, parent }) => {
+const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled, clickRes, children, parent }) => {
 
   const [menuOpen, setOpen] = useState(false);
   const [childSelect, setStatus] = useState(false);
@@ -131,7 +130,7 @@ const SubMenu:React.FC<SubMenuProps> = ({ handleKey, className, title, disabled,
   }
   
   return (
-    <li className={classes} {...mouseEvent} ref={subContainRef}>
+    <li className={classes} {...mouseEvent} ref={subContainRef} key={handleKey}>
         { title }
         {/* <div className={`arrow-${context.inline || context.mode === 'horizontal' ? "up-down": "left-right"} ${menuOpen ? 'open' : "" }`}/> */}
       { menuOpen && renderChild() }
