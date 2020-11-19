@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
-import axios from 'axios';
+import axios, { AxiosTransformer } from 'axios';
 import {IUploadCore, IUploadFile} from './interface';
 
 function axiosUpload(files: FileList, props: IUploadCore, changeFileList: Dispatch<SetStateAction<IUploadFile[]>>):void {
@@ -56,17 +56,14 @@ function axiosUpload(files: FileList, props: IUploadCore, changeFileList: Dispat
       percent: 0,
       file: file,
     }
-
-    new Promise<string>((resolve, reject) => {
+    changeFileList(prevList => [_file, ...prevList]);
+    new Promise<string>(resolve => {
       if (typeof action === 'function') {
-        console.log("action function")
         return resolve(action(file));
-      } else if (typeof action === 'string') {
-        return resolve(action);
       }
-      reject("action is not function or string")
+      return resolve(action);
     }).then(action => {
-      console.log(action)
+      
       const axiosConfig = {
         headers: {
           ...headers,
@@ -83,6 +80,10 @@ function axiosUpload(files: FileList, props: IUploadCore, changeFileList: Dispat
             onProgress && onProgress(percent, file);
           }
         },
+        transformRequest: [function (data: FormData)  {
+          console.log("transformReq", data.values())
+          return data
+        }],
         withCredentials,
       }
       
@@ -102,12 +103,11 @@ function axiosUpload(files: FileList, props: IUploadCore, changeFileList: Dispat
         return;
       }
 
-      changeFileList(prevList => [_file, ...prevList]);
       axiosReq.then(res => {
-        updateFileList(_file, {status: 'success', response: res.data, percent: 100})
+        console.log(res)
+        updateFileList(_file, {status: 'success', response: res, percent: 100});
         onSuccess && onSuccess(res.data, file);
       }).catch(err => {
-        console.log("err")
         updateFileList(_file, {status: 'error', error: err, percent: 100})
         onError && onError(err, file);
       })

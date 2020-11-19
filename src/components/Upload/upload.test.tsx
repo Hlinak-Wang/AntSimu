@@ -2,22 +2,13 @@ import React from 'react';
 import { render, fireEvent, RenderResult, wait, queryByTestId, cleanup } from '@testing-library/react';
 import Upload from './upload';
 import { IUploadProps } from './interface';
-import axios from 'axios';
 import { act } from 'react-dom/test-utils';
 
-//jest.mock('axios');
-/* jest.mock('rc-tween-one', () => {
-  return {
-    TweenOneGroup: (props: any) => <ul>{props.children}</ul>
-  }
-}) */
-
-//const jestAxios = axios as jest.Mocked<typeof axios>;
 /**
  * action list:
- * http://www.mocky.io/v2/5ec939dc2f0000354adb719a return {"test": "ok"}
- * http://www.mocky.io/v2/5eca74eb300000492ca6cfd3 return {"file-size": "small"}
- * http://www.mocky.io/v2/5eca75073000006300a6cfd6 return {"file-size": "large"}
+ * https://getman.cn/mock/file-upload return {"file-upload": "pass"}
+ * https://getman.cn/mock/file/small return {"file-size": "small"}
+ * https://getman.cn/mock/file/large return {"file-size": "large"}
  */
 
 let wrapper: RenderResult, fileInput: HTMLInputElement, uploadArea: HTMLDivElement;
@@ -29,19 +20,20 @@ async function checkFileUpload(
   expectStatus: {onload: number, success?: number, error?: number},
   expectResponce: any
   ) {
+
   expect(testProps.onChange).toBeCalled();
   await wait(() => {
     expect(wrapper.getAllByTestId('spin').length).toBe(expectStatus.onload);
   })
-  
+
   await wait(() => {
     expect(wrapper.getAllByTestId('check-circle').length).toBe(expectStatus.success);
     expect(wrapper.queryByText(fileCalled.name)).toBeInTheDocument();
+    
   })
 
   expect(testProps.onProgress).toBeCalled();
-  //expect(queryByText()) 
-  expect(testProps.onSuccess).toBeCalledWith(expectResponce, fileCalled)
+  expect(testProps.onSuccess).toBeCalledWith(expectResponce, fileCalled);
 }
 
 describe("test for action", () => {
@@ -54,17 +46,16 @@ describe("test for action", () => {
   }
   it("action is string", async () => {
     
-    wrapper = render(<Upload {...testProps} action="http://www.mocky.io/v2/5ec939dc2f0000354adb719a">upload</Upload>);
+    wrapper = render(<Upload {...testProps} action="https://getman.cn/mock/file-upload">upload</Upload>);
     fileInput = wrapper.container.querySelector("input") as HTMLInputElement;
-    expect(wrapper).toMatchSnapshot();
-
+  
     expect(wrapper).toMatchSnapshot();
     const testFile = new File(Array(1), "test.txt");
     act(() => {
       fireEvent.change(fileInput, { target: { files: [testFile] }});
     })
     
-    await checkFileUpload(wrapper, testProps, testFile, {onload: 1, success: 1}, {'test': "ok"});
+    await checkFileUpload(wrapper, testProps, testFile, {onload: 1, success: 1}, {"file-upload": "pass"});
   })
 
   it("action is function", async () => {
@@ -73,9 +64,9 @@ describe("test for action", () => {
         {...testProps} 
         action={file => {
           if (file.size < 10) {
-            return Promise.resolve("http://www.mocky.io/v2/5eca74eb300000492ca6cfd3")
+            return Promise.resolve("https://getman.cn/mock/file/small")
           } else {
-            return Promise.resolve("http://www.mocky.io/v2/5eca75073000006300a6cfd6")
+            return Promise.resolve("https://getman.cn/mock/file/large")
           }
         }}
       >
@@ -90,14 +81,49 @@ describe("test for action", () => {
       fireEvent.change(fileInput, { target: { files: [smallFile]}});
     });
 
-    await checkFileUpload(wrapper, testProps, smallFile, { onload: 1, success: 1}, {"file-size": "small"})
+    await checkFileUpload(wrapper, testProps, smallFile, { onload: 1, success: 1}, {"file-size": "small"});
 
+    const largeFile = new File(Array(2), "large.txt");
+    act(() => {
+      fireEvent.change(fileInput, { target: { files: [largeFile]}});
+    })
+
+    await checkFileUpload(wrapper, testProps, largeFile, { onload: 1, success: 2}, {"file-size": "large"})
+  })
+})
+
+describe("test filename", () => {
+  const testProps: IUploadProps = {
+    action: "https://getman.cn/mock/file-upload", // return {"file-upload": "pass"}
+    method: 'post',
+    onSuccess: jest.fn(),
+    onError: jest.fn(),
+    onChange: jest.fn(),
+    onProgress: jest.fn(),
+  }
+  it("filename is a string", async () => {
+    wrapper = render(
+      <Upload 
+        {...testProps} 
+        filename="test filename"
+      >
+        upload
+      </Upload>
+    );
+    fileInput = wrapper.container.querySelector('input') as HTMLInputElement;
+
+    const file = new File(Array(1), "file1.txt");
+    act(() => {
+      fireEvent.change(fileInput, { target: { files: [file] }});
+    })
+    expect(testProps.onChange).toBeCalled();
+    await checkFileUpload(wrapper, testProps, file, {onload: 1, success: 1}, {"file-upload": "pass"});
   })
 })
 
 describe('basic test', () => {
   const testProps: IUploadProps = {
-    action: "http://www.mocky.io/v2/5ec939dc2f0000354adb719a", // return { "test": "ok" }
+    action: "https://getman.cn/mock/file-upload", // return {"file-upload": "pass"}
     method: 'post',
     onSuccess: jest.fn(),
     onError: jest.fn(),
@@ -116,13 +142,13 @@ describe('basic test', () => {
     })
 
     expect(testProps.onChange).toBeCalled();
-    await checkFileUpload(wrapper, testProps, file1, {onload: 1, success: 1}, {'test': "ok"});
+    await checkFileUpload(wrapper, testProps, file1, {onload: 1, success: 1}, {"file-upload": "pass"});
 
     const file2 = new File(Array(2), "file2.txt")
     act(() => {
       fireEvent.change(fileInput, { target: { files: [file2] }});
     })
-    await checkFileUpload(wrapper, testProps, file2, {onload: 1, success: 2}, {'test': "ok"});
+    await checkFileUpload(wrapper, testProps, file2, {onload: 1, success: 2}, {"file-upload": "pass"});
   })
 
   it('test beforeUpload which return boolean', async () => {
