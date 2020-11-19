@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes, ChangeEvent, forwardRef, useImperativeHandle, useRef, ReactNode, useState, FocusEvent } from 'react';
+import React, { InputHTMLAttributes, ChangeEvent, forwardRef, useImperativeHandle, ReactNode, useState, FocusEvent, createRef } from 'react';
 import classnames from 'classnames';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
@@ -25,9 +25,21 @@ export interface RefInput {
 }
 export const Input= forwardRef<RefInput, InputProps>((props,ref) => {
 
-  const { size, addBefore, addAfter, inputPrefix, inputSuffix, onFocus, onBlur, className, style, ...restProps } = props;
+  const { 
+    size, 
+    addBefore, 
+    addAfter, 
+    inputPrefix, 
+    inputSuffix, 
+    onFocus, 
+    onBlur, 
+    className, 
+    style, 
+    ...restProps 
+  } = props;
+
   const [inputFocus, setInputFocus] = useState(false);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = createRef<HTMLInputElement>();
 
   useImperativeHandle(ref, () => ({
     focus: () => inputRef.current!.focus(),
@@ -57,36 +69,41 @@ export const Input= forwardRef<RefInput, InputProps>((props,ref) => {
     setInputFocus(false);
   }
 
+  const inputClass = classnames("wrapped-input", {
+    [`input-${size}`]: true
+  })
+
   if ('addBefore' in props || 'addAfter' in props) {
 
-    const cls = classnames("input-addon-wrapper", className);
-    const InnerCls = classnames('input-inner-wrapper', {
+    const addonWrapper = classnames("input-addon-wrapper", className);
+    const inputContainer = classnames('input-inner-wrapper', {
       'inner-wrapper-focus': inputFocus,
       'with-add-before': addBefore,
       'with-add-after': addAfter
     })
+
     return (
-      <span className={cls}>
+      <span className={addonWrapper}>
         {addBefore && <span className="input-addBefore">{addBefore}</span>}
-        <span className={InnerCls} >
+        <span className={inputContainer}>
           {inputPrefix}
-          <input className="input" ref={inputRef} onFocus={handleOnFocus} onBlur={handleOnBlur} {...restProps} />
+          <input className={inputClass} ref={inputRef} onFocus={handleOnFocus} onBlur={handleOnBlur} {...restProps} />
           {inputSuffix}
         </span>
         {addAfter && <span className="input-addAfter">{addAfter}</span>}
       </span>
     )
   } else { 
-    const InnerCls = classnames('input-inner-wrapper', className, {
+    const inputContainer = classnames('input-inner-wrapper', className, {
       'inner-wrapper-focus': inputFocus,
       'with-add-before': addBefore,
       'with-add-after': addAfter
     })
 
     return (
-      <span className={InnerCls} style={style}>
+      <span className={inputContainer} style={style}>
         {inputPrefix}
-        <input className="input" ref={inputRef} onFocus={handleOnFocus} onBlur={handleOnBlur} style={style} {...restProps} />
+        <input className={inputClass} ref={inputRef} onFocus={handleOnFocus} onBlur={handleOnBlur} style={style} {...restProps} />
         {inputSuffix}
       </span>
     )

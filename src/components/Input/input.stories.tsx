@@ -15,7 +15,7 @@ const Control = () => {
   )
 }
 
-const button = <Button>test</Button>;
+const button = <Button>prefix</Button>;
 
 storiesOf('Input', module)
   .add('Input', () => (
@@ -27,12 +27,11 @@ storiesOf('Input', module)
   .add('Input 的尺寸', () => (
     <div>
       <Input size="sm" />
+      <br />
       <Input size="mid" />
+      <br />
       <Input size="lg" />
     </div>
-  ))
-  .add('test', () => (
-    <Control />
   ))
   .add('addBefore and addAfter', () => (
     <div>
