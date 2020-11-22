@@ -9,7 +9,7 @@ storiesOf('Menu 菜单', module)
   .add('水平菜单', () => (
     <>
       <p>顶部菜单</p>
-      <Menu mode="horizontal">
+      <Menu mode="horizontal" defaultIndex={["1"]}>
         <MenuItem handleKey="1">
           123
         </MenuItem>

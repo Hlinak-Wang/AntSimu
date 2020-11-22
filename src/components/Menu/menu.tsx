@@ -1,11 +1,10 @@
 import React, { useState, useEffect, createContext } from 'react';
 import classnames from 'classnames';
 import { MenuItemProps } from './menuItem';
-import { Context } from '@emotion/stylis';
 
-type MenuMode = 'horizontal' | 'vertical';
-type SubMenuMode = 'pop' | 'inline';
-type SelectCallBack = (selectIndex: string) => void;
+export type MenuMode = 'horizontal' | 'vertical';
+export type SubMenuMode = 'pop' | 'inline';
+export type SelectCallBack = (selectIndex: string) => void;
 
 export interface MenuProps {
   mode?: MenuMode;
@@ -24,6 +23,30 @@ interface IMenuContext {
   subMode?: SubMenuMode;
 }
 
+export const useSelect = (defaultSelect: string[], multiple: boolean, callback?: SelectCallBack) => {
+  const [selected, setSelect] = useState<string[]>([...defaultSelect])
+  
+  const changeSelect = (index: string) => {
+    if (multiple) {
+      const activeIndex = selected.findIndex(e => e === index);
+      if (activeIndex >= 0) {
+        setSelect(v => {
+          const a = [...v]
+          a.splice(activeIndex, 1)
+          return a;
+        });
+      } else {
+        setSelect(v => [...v, index]);
+      }
+    } else {
+      setSelect([index]);
+    }
+    
+    callback && callback(index) 
+  }
+  return {selected, changeSelect}
+}
+
 export const MenuContext = createContext<IMenuContext>({selectKey: []})
 
 const Menu: React.FC<MenuProps> = (props) => {
@@ -38,7 +61,7 @@ const Menu: React.FC<MenuProps> = (props) => {
     children
   } = props;
 
-  const [ currentActive, setActive ] = useState(defaultIndex ? defaultIndex : []);
+  const {selected, changeSelect} = useSelect(defaultIndex ? defaultIndex : [], multiple!, onSelect);
 
   useEffect(() => {
     // 检查children是否为MenuItem或SubMenu
@@ -51,30 +74,10 @@ const Menu: React.FC<MenuProps> = (props) => {
     })
   }, [children]);
 
-  
-  const handleClick = (index: string) => {
-    if (multiple) {
-      const activeIndex = currentActive.findIndex(e => e === index);
-      if (activeIndex >= 0) {
-        setActive(v => {
-          const a = [...v]
-          a.splice(activeIndex, 1)
-          return a;
-        });
-      } else {
-        setActive(v => [...v, index]);
-      }
-    } else {
-      setActive([index]);
-    }
-    
-    onSelect && onSelect(index) 
-  }
-
   // children的样式
   const passedContext: IMenuContext = {
-    selectKey: currentActive ? [...currentActive] : [],
-    onSelect: handleClick,
+    selectKey: selected ? [...selected] : [],
+    onSelect: changeSelect,
     mode,
     subMode,
   }

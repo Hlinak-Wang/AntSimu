@@ -36,7 +36,7 @@ const MenuItem:React.FC<MenuItemProps> = (props) => {
       clickRes()
     }
   };
-
+  
   return (
     <li className={classes} style={style} onClick={handleClick}>
       {children}
