@@ -65,12 +65,11 @@ export const Button: FC<ButtonProps> = (props) => {
     'btn-danger': danger,
     'btn-block': block,
   })
-
   return (
     <button
       className={classes}
       disabled={disabled}
-      onClick={handleClick}
+      onClick={!disabled ? handleClick : undefined}
       {...propsLeft}
     >
       <a

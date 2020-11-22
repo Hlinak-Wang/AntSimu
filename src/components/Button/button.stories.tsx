@@ -11,7 +11,7 @@ storiesOf('button 按钮', module)
     return (
     <div>
       <div>虚线框按钮</div>
-      <Button btnType="dash" style={margin}>dash buttom</Button>
+      <Button btnType="dash" style={margin} className="dash-test">dash buttom</Button>
       <Button disabled btnType="dash" style={margin}>dash buttom</Button>
       <br />
       <div>标准按钮</div>

@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test button component should rendeer a disabled button when disabled is set to true 1`] = `ShallowWrapper {}`;
+
+exports[`test button component should render a link when there is a href prop 1`] = `ReactWrapper {}`;
+
+exports[`test button component should render button for dash style 1`] = `ShallowWrapper {}`;
+
+exports[`test button component should render button for vacuum style 1`] = `ShallowWrapper {}`;
