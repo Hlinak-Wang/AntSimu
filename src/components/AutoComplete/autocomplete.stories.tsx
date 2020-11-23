@@ -18,9 +18,10 @@ const localAuto = () => {
     return a.filter(v => v.value.includes(keyword))
   } 
 
-  return <AutoComplete fetchSuggestion={handleFetch} onSelect={action('selected')}/>
+  return <AutoComplete fetchSuggestion={handleFetch} onSelect={action('selected')} value="a"/>
 
 }
+
 const netAuto = () => {
   type DataType = {value: string};
 

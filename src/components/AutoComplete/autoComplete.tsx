@@ -1,18 +1,49 @@
-import React, { FC, KeyboardEvent, useState, ReactElement, useEffect, useRef } from 'react';
+import React, { FC, KeyboardEvent, useState, ReactElement, useRef, ChangeEvent } from 'react';
 import Animate from '../Animate/animate';
 import classnames from 'classnames';
-import useDebounce from '../../hooks/useDebounce';
 import Input, { InputProps } from '../Input/input';
 import useClickOutSide from '../../hooks/useClickOutSide';
-
+import debounce from '../../hooks/debounce'
 export type OptionType<T = {}> = T & {value: string;}
+export type FetchHandle = (keyword: string) => OptionType[] | Promise<OptionType[]>
 
 export interface IAutoComplete extends Omit<InputProps, 'onSelect'> {
-  fetchSuggestion: (keyword: string) => OptionType[] | Promise<OptionType[]>;
-  onSelect?: (item: OptionType) => void;
-  renderOption?: (item: OptionType) => ReactElement;
+  fetchSuggestion: FetchHandle
+  onSelect?: (item: OptionType) => void
+  renderOption?: (item: OptionType) => ReactElement
 }
 
+export const useFetch = (fetchSuggestion: FetchHandle, delay: number, imm:boolean) => {
+  const [isLoad, setLoading] = useState(false)
+  const [fetchActive, setActive] = useState(false)
+  const [suggestions, setSuggestion] = useState<OptionType[]>([])
+  
+  const goFetch =(value: string) => {
+    // 当Input.value有值时
+    if (value) {
+      const results = fetchSuggestion(value);
+      if (results instanceof Promise) {
+        setActive(true)
+        setLoading(true);
+        results.then(data => {
+          if (data.length !== 0) {
+            setLoading(false)
+            setSuggestion([...data]);
+          }
+        }).catch(err => {
+          console.log(err)
+        })
+      } else {
+        setLoading(false);
+        setActive(true)
+        setSuggestion([...results]);
+      }
+    }
+  }
+
+  const fetching = debounce(goFetch, delay, imm)
+  return { suggestions, isLoad, fetching, fetchActive, setActive }
+}
 
 export const AutoComplete:FC<IAutoComplete> = (props) => {
   const {
@@ -25,60 +56,18 @@ export const AutoComplete:FC<IAutoComplete> = (props) => {
   } = props;
   
   const [inputValue, setInputValue] = useState(value as string);
-  const [suggestions, setSuggestion] = useState<OptionType[]>([]);
-  const [loading, setLoading] = useState(false);
   const [hightLight, setHightLight] = useState(-1);
-  const [suggestionOpen, setSuggestionOpen] = useState(false);
   const [inputActive, setInputActive] = useState(false);
-  const debounceValue = useDebounce(inputValue, 200);
   const componentRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  useClickOutSide(componentRef, () => {setSuggestionOpen(false)})
+  const { suggestions, isLoad, fetching, fetchActive, setActive } = useFetch(fetchSuggestion, 200, true)
 
-  useEffect(() => {
-    // 当Input.value有值时
-    if (debounceValue) {
-      console.log("refresh")
-      const results = fetchSuggestion(debounceValue);
-      if (results instanceof Promise) {
-        setLoading(true);
-        setSuggestionOpen(true);
-        results.then(data => {
-          
-          if (data.length === 0) {
-            setSuggestionOpen(false);
-            console.log("hello zero")
-          } else {
-            setLoading(false)
-            setSuggestion(data);
-          }
-
-        }).catch(err => {
-          console.log(err)
-        })
-      } else {
-        if (results.length === 0) {
-          setSuggestionOpen(false)
-          console.log(suggestions)
-        } else {
-          setSuggestion(results);
-          setSuggestionOpen(true);
-        }
-      }
-    } 
-    // 当Input.value没值时
-    else { 
-      setSuggestionOpen(false);
-    }
-  }, [debounceValue, inputActive]);
+  useClickOutSide(componentRef, () => {setActive(false)})
 
   const handleSelect = (item: OptionType) => {
+    console.log("asdfzxc")
     setInputValue(item.value);
     onSelect && onSelect(item)
-  }
-
-  const renderTemplate = (item: OptionType) => {
-    return renderOption ? renderOption(item) : item.value
   }
 
   const handleHightLight = (newHightLight: number) => {
@@ -114,14 +103,14 @@ export const AutoComplete:FC<IAutoComplete> = (props) => {
   const generateDropDown = () => {
     const offsetTop = componentRef.current && componentRef.current.clientHeight + 6;
     return (
-      <Animate
-        in={inputActive && suggestionOpen}
-        timeout={300}
-        classNames={`test-top`}
-        unmountOnExit
-      >
+      // <Animate
+      //   in={inputActive && fetchActive}
+      //   timeout={300}
+      //   classNames={`test-top`}
+      //   unmountOnExit
+      // >
         <ul className="suggestion-list" style={{top: `${offsetTop}px`}}>
-          {loading 
+          {isLoad 
           ? <li><h1>loading</h1></li>
           : suggestions.map((suggestion, index) => {
             const cls = classnames('suggestion-item', {
@@ -129,41 +118,50 @@ export const AutoComplete:FC<IAutoComplete> = (props) => {
               'same-suggestion': suggestion.value === inputValue
             })
             return (
-              <li key={index} className={cls} onMouseEnter={() => setHightLight(index)} onClick={() => handleSelect(suggestion)}>
-                {renderTemplate(suggestion)}
+              <li 
+                key={index} 
+                className={cls} 
+                onMouseEnter={() => {console.log("asdf"); setHightLight(index)}} 
+                onClick={() => {handleSelect(suggestion)}}
+              >
+                {renderOption ? renderOption(suggestion) : suggestion.value}
               </li>
             )
           })
           }
         </ul>
-      </Animate>
+      //</Animate>
     )
   }
 
   const handleFocus = () => {
-    console.log("onfocus", inputActive, suggestionOpen)
     setInputActive(true);
-    console.log("set true")
   }
 
   const handleBlur = () => {
-
-    console.log("onblur", inputActive, suggestionOpen)
     setInputActive(false);
-    console.log("set false")
   }
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    
+    setInputValue(e.target.value)
+    fetching(e.target.value)
+    onChange && onChange(e)
+    console.log(fetchActive)
+  }
+
   return (
     <div className="input-autocomplete" ref={componentRef}>
       <Input 
         ref={inputRef} 
         onFocus={handleFocus}
         onBlur={handleBlur}
-        value={inputValue} onChange={e => {setInputValue(e.target.value)}} 
+        value={inputValue} 
+        onChange={handleChange} 
         onKeyDown={handleKeyboard} 
         {...restProps} 
       />
-      
-      {generateDropDown()} 
+      {inputActive && fetchActive && generateDropDown()} 
     </div>
   )
 }

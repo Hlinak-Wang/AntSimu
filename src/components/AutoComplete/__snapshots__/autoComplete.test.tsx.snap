@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`autocomplete test should act as input as normal 1`] = `ReactWrapper {}`;
+
+exports[`autocomplete test test fetch online 1`] = `ReactWrapper {}`;
